@@ -7,7 +7,6 @@
     <Nullable>enable</Nullable>
     <RootNamespace>OpenClawClient.Desktop</RootNamespace>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyName>OpenClawClient</AssemblyName>
   </PropertyGroup>
 
