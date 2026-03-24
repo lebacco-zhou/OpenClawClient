@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 推送指南 - OpenClaw Client</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #24292e;
+            border-bottom: 3px solid #24292e;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        h2 {
+            color: #24292e;
+            margin: 30px 0 15px 0;
+            padding: 10px 0;
+            border-left: 4px solid #0366d6;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #444;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin: 10px 0;
+        }
+        
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        code {
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Consolas", "Monaco", monospace;
+            color: #e83e8c;
+        }
+        
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            color: #24292e;
+            padding: 0;
+        }
+        
+        .note {
+            background: #dbedff;
+            border-left: 4px solid #0366d6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .warning {
+            background: #ffeef0;
+            border-left: 4px solid #cb2431;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .success {
+            background: #dcffe4;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .github-header {
+            background: #24292e;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .github-header h2 {
+            color: white;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .step-box {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #0366d6;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e4e8;
+            color: #666;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        .command-list {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .command-list code {
+            display: block;
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #e1e4e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="github-header">
+            <h2>🐙 GitHub 推送指南</h2>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">将 OpenClaw Client 推送到 GitHub 仓库</p>
+        </div>
+        
+        <div class="note">
+            <strong>📌 快速导航：</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li><a href="#创建仓库">步骤 1: 创建 GitHub 仓库</a></li>
+                <li><a href="#推送代码">步骤 2: 推送代码</a></li>
+                <li><a href="#验证">步骤 3: 验证推送</a></li>
+                <li><a href="#常见问题">常见问题</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="创建仓库">📦 步骤 1: 在 GitHub 创建仓库</h2>
+        
+        <div class="step-box">
+            <p><span class="step-number">1</span> <strong>访问 GitHub 创建页面</strong></p>
+            <p>打开浏览器访问：<a href="https://github.com/new" target="_blank">https://github.com/new</a></p>
+        </div>
+        
+        <div class="step-box">
+            <p><span class="step-number">2</span> <strong>填写仓库信息</strong></p>
+            <ul>
+                <li><strong>Repository name</strong>: <code>OpenClawClient</code></li>
+                <li><strong>Description</strong>: <code>安全加密的 Windows 桌面聊天客户端 - .NET 8 WPF</code></li>
+                <li><strong>Public</strong> 或 <strong>Private</strong>（建议 Private，包含配置示例）</li>
+                <li>❌ 不要勾选 "Add a README file"</li>
+                <li>❌ 不要勾选 ".gitignore"</li>
+                <li>❌ 不要勾选 "Choose a license"</li>
+            </ul>
+        </div>
+        
+        <div class="step-box">
+            <p><span class="step-number">3</span> <strong>点击 "Create repository"</strong></p>
+        </div>
+        
+        <h2 id="推送代码">🚀 步骤 2: 推送代码到 GitHub</h2>
+        
+        <div class="note">
+            <strong>💡 提示：</strong> 在服务器或本地计算机上执行以下命令
+        </div>
+        
+        <h3>2.1 获取仓库地址</h3>
+        <p>创建成功后，GitHub 会显示仓库地址，格式如下：</p>
+        <pre><code>https://github.com/你的用户名/OpenClawClient.git</code></pre>
+        <p><strong>复制这个地址！</strong></p>
+        
+        <h3>2.2 添加远程仓库并推送</h3>
+        <pre><code># 进入项目目录
+cd /root/.openclaw/workspace/OpenClawClient
+
+# 添加远程仓库（替换为你的地址）
+git remote add origin https://github.com/你的用户名/OpenClawClient.git
+
+# 验证远程仓库
+git remote -v
+
+# 推送代码
+git push -u origin master</code></pre>
+        
+        <div class="success">
+            <strong>✅ 推送完成后</strong>，访问你的 GitHub 仓库页面确认代码已上传：
+            <br><code>https://github.com/你的用户名/OpenClawClient</code>
+        </div>
+        
+        <h2 id="验证">✅ 步骤 3: 验证推送</h2>
+        
+        <p>访问 GitHub 仓库页面，确认以下内容：</p>
+        <ul>
+            <li>✅ 显示 7 次提交记录</li>
+            <li>✅ 文件结构完整（src/、scripts/、docs/ 等）</li>
+            <li>✅ README.md 内容正确显示</li>
+        </ul>
+        
+        <h2>🔄 后续更新代码</h2>
+        
+        <p>首次推送后，后续更新更简单：</p>
+        <pre><code># 修改代码后
+git add .
+git commit -m "描述你的修改"
+git push</code></pre>
+        
+        <h2 id="克隆">📥 在其他设备克隆</h2>
+        
+        <p>在 Windows 上克隆项目：</p>
+        <pre><code># 创建项目目录
+mkdir C:\Projects
+cd C:\Projects
+
+# 克隆项目
+git clone https://github.com/你的用户名/OpenClawClient.git
+
+# 进入项目目录
+cd OpenClawClient
+
+# 还原依赖
+dotnet restore
+
+# 运行
+dotnet run --project src\OpenClawClient.Desktop</code></pre>
+        
+        <h2 id="SSH 方式">🔐 使用 SSH 方式（可选）</h2>
+        
+        <p>如果配置了 SSH 密钥，可以使用 SSH 地址：</p>
+        <pre><code># SSH 地址格式
+git@github.com:你的用户名/OpenClawClient.git
+
+# 添加远程仓库
+git remote add origin git@github.com:你的用户名/OpenClawClient.git
+
+# 推送
+git push -u origin master</code></pre>
+        
+        <h2 id="常见问题">🐛 常见问题</h2>
+        
+        <h3>Q: <code>git remote add origin</code> 报错 "remote origin already exists"</h3>
+        <div class="success">
+            <strong>解决方法：</strong> 远程仓库已存在，先删除再添加：
+            <pre><code>git remote remove origin
+git remote add origin &lt;新地址&gt;</code></pre>
+        </div>
+        
+        <h3>Q: <code>git push</code> 报错 "Permission denied"</h3>
+        <div class="success">
+            <strong>解决方法：</strong>
+            <ol>
+                <li>检查 GitHub 用户名是否正确</li>
+                <li>确认有仓库写入权限</li>
+                <li>或使用 SSH 方式（需配置 SSH 密钥）</li>
+            </ol>
+        </div>
+        
+        <h3>Q: 推送大文件失败</h3>
+        <div class="success">
+            <strong>解决方法：</strong> GitHub 单文件限制 100MB，使用 Git LFS：
+            <pre><code>git lfs install
+git lfs track "*.zip"
+git add .gitattributes
+git commit -m "Configure LFS"
+git push</code></pre>
+        </div>
+        
+        <h2>📚 相关文档</h2>
+        <ul>
+            <li><a href="BUILD-WINDOWS.html">Windows 构建说明</a> - 完整的构建指南</li>
+            <li><a href="../README.html">项目概述</a> - OpenClaw Client 介绍</li>
+            <li><a href="开发指南.md">开发指南</a> - 开发环境配置</li>
+        </ul>
+        
+        <div class="footer">
+            <p><strong>最后更新</strong>: 2026-03-24 &nbsp;|&nbsp; <strong>适用版本</strong>: v1.0.0</p>
+            <p>OpenClaw Client - 让沟通更安全、更可靠</p>
+        </div>
+    </div>
+</body>
+</html>
