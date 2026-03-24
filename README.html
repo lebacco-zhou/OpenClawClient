@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Client - 项目概述</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #333;
+            margin: 30px 0 15px 0;
+            padding: 10px 0;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #555;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin: 10px 0;
+        }
+        
+        ul {
+            margin: 10px 0 10px 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .feature-item:before {
+            content: "✅ ";
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Consolas", "Monaco", monospace;
+            color: #e83e8c;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: "Consolas", "Monaco", monospace;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .tech-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .project-tree {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .highlight-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+        
+        .security-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .security-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+        
+        .security-box ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .security-box li:before {
+            content: "🔒 ";
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .quick-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        
+        .quick-link:hover {
+            transform: translateY(-3px);
+            text-decoration: none;
+        }
+        
+        .config-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 OpenClaw Client</h1>
+        <p style="text-align: center; font-size: 1.2em; color: #666;">安全加密的 Windows 桌面聊天客户端</p>
+        
+        <div class="highlight-box">
+            <h3>📦 功能特性</h3>
+            <div class="feature-grid">
+                <div class="feature-item">端到端加密通信（AES-256-GCM）</div>
+                <div class="feature-item">登录配置管理（服务器地址、Gateway Token）</div>
+                <div class="feature-item">文件拖拽发送</div>
+                <div class="feature-item">剪贴板粘贴图片/文件</div>
+                <div class="feature-item">自定义文件下载路径</div>
+                <div class="feature-item">自动日期子文件夹分类</div>
+                <div class="feature-item">绿色版 + 安装包版双版本</div>
+                <div class="feature-item">连接状态指示器</div>
+                <div class="feature-item">消息发送状态跟踪</div>
+                <div class="feature-item">文件下载进度显示</div>
+                <div class="feature-item">图片全屏查看器（缩放、拖拽、保存）</div>
+                <div class="feature-item">消息搜索功能</div>
+                <div class="feature-item">自动重连机制（最多 5 次，指数退避）</div>
+            </div>
+        </div>
+        
+        <h2>🛠️ 技术栈</h2>
+        <div class="tech-stack">
+            <span class="tech-badge">.NET 8.0</span>
+            <span class="tech-badge">WPF</span>
+            <span class="tech-badge">MaterialDesignInXaml</span>
+            <span class="tech-badge">AES-256-GCM 加密</span>
+            <span class="tech-badge">DPAPI 本地数据保护</span>
+            <span class="tech-badge">WebSocket</span>
+            <span class="tech-badge">HttpClient</span>
+        </div>
+        
+        <h2>📁 项目结构</h2>
+        <div class="project-tree">
+OpenClawClient/
+├── src/
+│   ├── OpenClawClient.Core/      # 核心业务逻辑
+│   │   ├── Models/               # 数据模型
+│   │   └── Services/             # 服务层（加密、网络、配置）
+│   ├── OpenClawClient.UI/        # WPF 界面
+│   │   ├── Views/                # 登录、聊天、图片查看器等
+│   │   └── Converters/           # 值转换器
+│   └── OpenClawClient.Desktop/   # 桌面应用入口
+├── tests/                        # 单元测试
+├── scripts/                      # 发布脚本
+│   ├── publish-portable.ps1      # 绿色版发布
+│   └── publish-setup.ps1         # 安装包发布
+├── installer/                    # Inno Setup 脚本
+└── dist/                         # 输出文件
+        </div>
+        
+        <h2>🚀 快速开始</h2>
+        
+        <h3>环境要求</h3>
+        <ul>
+            <li>Windows 10/11 (64 位)</li>
+            <li>.NET 8.0 SDK</li>
+            <li>Visual Studio 2022 (可选)</li>
+            <li>Inno Setup 6 (安装包编译，可选)</li>
+        </ul>
+        
+        <h3>本地运行</h3>
+        <pre><code>cd OpenClawClient
+dotnet run --project src\OpenClawClient.Desktop</code></pre>
+        
+        <h3>发布绿色版</h3>
+        <pre><code>.\scripts\publish-portable.ps1</code></pre>
+        <p>输出：<code>dist/OpenClawClient_Portable.zip</code> (~70MB)</p>
+        
+        <h3>发布安装包版</h3>
+        <pre><code>.\scripts\publish-setup.ps1</code></pre>
+        <p>输出：<code>dist/OpenClawClient_Setup.exe</code> (~75MB)</p>
+        
+        <div class="security-box">
+            <h3>🔒 安全说明</h3>
+            <ul>
+                <li>敏感字段使用 DPAPI 加密存储</li>
+                <li>消息内容使用 AES-256-GCM 端到端加密</li>
+                <li>文件传输使用 HTTPS 加密通道</li>
+                <li>不存储明文密码或令牌</li>
+            </ul>
+        </div>
+        
+        <h2>📝 配置文件</h2>
+        
+        <h3>配置路径</h3>
+        <ul>
+            <li><strong>绿色版</strong>: <code>./config/appsettings.json</code></li>
+            <li><strong>安装包版</strong>: <code>%APPDATA%\OpenClawClient\appsettings.json</code></li>
+        </ul>
+        
+        <h3>配置示例</h3>
+        <div class="config-example">
+{
+  "serverUrl": "https://www.lebacco.cn:8443",
+  "gatewayToken": "&lt;31 位十六进制令牌&gt;",
+  "aesKey": "&lt;AES-256 密钥&gt;",
+  "downloadPath": "D:\\MyFiles\\OpenClaw",
+  "autoSubfolder": true,
+  "rememberLogin": true
+}
+        </div>
+        
+        <h2>📚 文档导航</h2>
+        <div class="quick-links">
+            <a href="BUILD-WINDOWS.html" class="quick-link">
+                <h3>🛠️ Windows 构建说明</h3>
+                <p>详细的构建和发布指南</p>
+            </a>
+            <a href="开发指南.html" class="quick-link">
+                <h3>📖 开发指南</h3>
+                <p>开发环境配置和调试</p>
+            </a>
+            <a href="项目总结.html" class="quick-link">
+                <h3>📊 项目总结</h3>
+                <p>功能清单和架构说明</p>
+            </a>
+        </div>
+        
+        <h2>📄 许可证</h2>
+        <p>MIT-0</p>
+        
+        <div class="footer">
+            <p><strong>版本</strong>: v1.0.0 &nbsp;|&nbsp; <strong>最后更新</strong>: 2026-03-24</p>
+            <p>OpenClaw Client - 让沟通更安全、更可靠</p>
+        </div>
+    </div>
+</body>
+</html>
