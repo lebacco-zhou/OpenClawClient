@@ -54,11 +54,9 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="5,3" Padding="12,8" CornerRadius="12"
-                            Background="{Binding Role, Converter={StaticResource RoleToBackgroundConverter}}"
                             BorderBrush="{DynamicResource MaterialDesignDivider}"
                             BorderThickness="1"
-                            MaxWidth="600"
-                            HorizontalAlignment="{Binding Role, Converter={StaticResource RoleToAlignmentConverter}}">
+                            MaxWidth="600">
                         <StackPanel>
                             <!-- File/Image Preview -->
                             <StackPanel Visibility="{Binding Type, Converter={StaticResource FileTypeToVisibilityConverter}}">

@@ -114,8 +114,100 @@ public partial class ChatWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            MessagesListBox.Items.Add(message);
-            MessagesListBox.ScrollIntoView(message);
+            // 设置消息气泡样式
+            var border = new Border
+            {
+                Margin = new Thickness(5, 3),
+                Padding = new Thickness(12, 8),
+                CornerRadius = new CornerRadius(12),
+                BorderBrush = (Brush)FindResource("MaterialDesignDivider"),
+                BorderThickness = new Thickness(1),
+                MaxWidth = 600
+            };
+
+            // 根据角色设置背景和对齐
+            if (message.Role == MessageRole.User)
+            {
+                border.Background = (Brush)FindResource("PrimaryHueLightBrush");
+                border.HorizontalAlignment = HorizontalAlignment.Right;
+            }
+            else if (message.Role == MessageRole.System)
+            {
+                border.Background = (Brush)FindResource("MaterialDesignDivider");
+                border.HorizontalAlignment = HorizontalAlignment.Center;
+            }
+            else
+            {
+                border.Background = (Brush)FindResource("MaterialDesignPaper");
+                border.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+
+            var stackPanel = new StackPanel();
+
+            // 文件/图片预览
+            if (message.Type == MessageType.File || message.Type == MessageType.Image)
+            {
+                var fileStack = new StackPanel();
+                var fileNameText = new TextBlock
+                {
+                    Text = message.FileName ?? "",
+                    FontWeight = FontWeights.SemiBold,
+                    Margin = new Thickness(0, 0, 0, 5)
+                };
+                fileStack.Children.Add(fileNameText);
+                stackPanel.Children.Add(fileStack);
+            }
+
+            // 消息内容
+            var contentText = new TextBlock
+            {
+                Text = message.Content,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 14
+            };
+            stackPanel.Children.Add(contentText);
+
+            // 时间戳和状态
+            var statusStack = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            var timestampText = new TextBlock
+            {
+                Text = message.Timestamp.ToString("HH:mm"),
+                FontSize = 10,
+                Foreground = (Brush)FindResource("MaterialDesignBodyLight")
+            };
+            statusStack.Children.Add(timestampText);
+
+            if (message.IsEncrypted)
+            {
+                var lockText = new TextBlock { Text = " 🔒", FontSize = 10 };
+                statusStack.Children.Add(lockText);
+            }
+
+            var statusText = new TextBlock
+            {
+                FontSize = 10,
+                Margin = new Thickness(5, 0, 0, 0)
+            };
+            statusText.Text = message.Status switch
+            {
+                DeliveryStatus.Pending => "⏳",
+                DeliveryStatus.Sent => "✓",
+                DeliveryStatus.Delivered => "✓✓",
+                DeliveryStatus.Failed => "✕",
+                _ => ""
+            };
+            statusStack.Children.Add(statusText);
+
+            stackPanel.Children.Add(statusStack);
+            border.Child = stackPanel;
+
+            MessagesListBox.Items.Add(border);
+            MessagesListBox.ScrollIntoView(border);
         });
     }
 
