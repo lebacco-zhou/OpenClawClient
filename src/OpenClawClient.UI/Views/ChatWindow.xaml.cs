@@ -32,7 +32,7 @@ public partial class ChatWindow : Window
         MessagesListBox.AllowDrop = true;
         
         // 粘贴事件
-        InputTextBox.PreviewExecuted += OnPreviewExecuted;
+        DataObject.AddPastingHandler(InputTextBox, OnPaste);
         
         // 初始化连接状态
         UpdateConnectionStatus(ConnectionState.Connecting);
@@ -164,14 +164,10 @@ public partial class ChatWindow : Window
         }
     }
 
-    private void OnPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+    private void OnPaste(object sender, DataObjectPastingEventArgs e)
     {
-        // 处理粘贴命令
-        if (e.Command == ApplicationCommands.Paste)
-        {
-            _ = HandlePasteAsync();
-            e.Handled = true;
-        }
+        // 处理粘贴
+        _ = HandlePasteAsync();
     }
 
     private async Task HandlePasteAsync()

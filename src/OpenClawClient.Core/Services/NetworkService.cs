@@ -92,7 +92,7 @@ public class NetworkService : INetworkService
             
             return true;
         }
-        catch (Exception ex)
+        catch
         {
             _isConnected = false;
             UpdateConnectionState(ConnectionState.Failed);
@@ -219,7 +219,7 @@ public class NetworkService : INetworkService
         {
             // Normal cancellation
         }
-        catch (Exception ex)
+        catch
         {
             _isConnected = false;
             _ = ReconnectAsync();
