@@ -59,7 +59,7 @@
                             MaxWidth="600">
                         <StackPanel>
                             <!-- File/Image Preview -->
-                            <StackPanel Visibility="{Binding Type, Converter={StaticResource FileTypeToVisibilityConverter}}">
+                            <StackPanel>
                                 <Image Source="{Binding FilePath}" 
                                        MaxHeight="200" MaxWidth="400"
                                        Stretch="Uniform"
@@ -83,10 +83,9 @@
                                 <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
                                           FontSize="10"
                                           Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                <TextBlock Text=" 🔒" 
-                                          Visibility="{Binding IsEncrypted, Converter={StaticResource BoolToVisibilityConverter}}"
+                                <TextBlock Text=" 🔒"
                                           FontSize="10"/>
-                                <TextBlock Text="{Binding Status, Converter={StaticResource StatusToIconConverter}}"
+                                <TextBlock Text="{Binding Status}"
                                           FontSize="10"
                                           Margin="5,0,0,0"/>
                             </StackPanel>
