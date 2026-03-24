@@ -55,8 +55,8 @@ public class CryptoService : ICryptoService
         if (string.IsNullOrEmpty(cipherText))
             return string.Empty;
 
-        using var aes = AesGcm.Create();
         var keyBytes = Encoding.UTF8.GetBytes(key);
+        using var aes = new AesGcm(keyBytes);
         var fullCipher = Convert.FromBase64String(cipherText);
 
         var iv = new byte[IvSize];
@@ -95,8 +95,8 @@ public class CryptoService : ICryptoService
 
     public byte[] DecryptFile(byte[] encryptedData, string key)
     {
-        using var aes = AesGcm.Create();
         var keyBytes = Encoding.UTF8.GetBytes(key);
+        using var aes = new AesGcm(keyBytes);
 
         var iv = new byte[IvSize];
         var tag = new byte[TagSize];
