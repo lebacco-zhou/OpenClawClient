@@ -2,7 +2,6 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:ui="clr-namespace:OpenClawClient.UI.Converters;assembly=OpenClawClient.UI"
              StartupUri="pack://application:,,,/OpenClawClient.UI;component/Views/LoginView.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -10,15 +9,6 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
-            <!-- 转换器 -->
-            <ui:RoleToBackgroundConverter x:Key="RoleToBackgroundConverter"/>
-            <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <ui:RoleToAlignmentConverter x:Key="RoleToAlignmentConverter"/>
-            <ui:FileTypeToVisibilityConverter x:Key="FileTypeToVisibilityConverter"/>
-            <ui:StatusToIconConverter x:Key="StatusToIconConverter"/>
-            <ui:ConnectionStateToTextConverter x:Key="ConnectionStateToTextConverter"/>
-            <ui:MessageTypeToIconConverter x:Key="MessageTypeToIconConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
