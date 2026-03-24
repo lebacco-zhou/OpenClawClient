@@ -17,6 +17,8 @@ public interface INetworkService
     Task<string> UploadFileAsync(byte[] fileData, string fileName);
     event EventHandler<ChatMessage>? MessageReceived;
     event EventHandler<ConnectionState>? ConnectionStateChanged;
+    bool IsConnected { get; }
+    Task ReconnectAsync();
 }
 
 public enum ConnectionState
@@ -29,7 +31,7 @@ public enum ConnectionState
 }
 
 /// <summary>
-/// OpenClaw Gateway 网络服务实现
+/// OpenClaw Gateway 网络服务实现 - 增强自动重连
 /// </summary>
 public class NetworkService : INetworkService
 {
@@ -39,6 +41,19 @@ public class NetworkService : INetworkService
     private string _token = string.Empty;
     private CancellationTokenSource? _cts;
     private bool _isConnected;
+    private bool _isReconnecting;
+    private int _reconnectAttempts = 0;
+    private const int MaxReconnectAttempts = 5;
+    private static readonly TimeSpan[] ReconnectDelays = 
+    {
+        TimeSpan.FromSeconds(1),
+        TimeSpan.FromSeconds(2),
+        TimeSpan.FromSeconds(5),
+        TimeSpan.FromSeconds(10),
+        TimeSpan.FromSeconds(30)
+    };
+
+    public bool IsConnected => _isConnected && _webSocket?.State == WebSocketState.Open;
 
     public event EventHandler<ChatMessage>? MessageReceived;
     public event EventHandler<ConnectionState>? ConnectionStateChanged;
@@ -51,17 +66,27 @@ public class NetworkService : INetworkService
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add("X-Gateway-Token", token);
 
-        var wsUrl = serverUrl.Replace("https://", "wss://").Replace("http://", "ws://");
+        return await ConnectInternalAsync();
+    }
+
+    private async Task<bool> ConnectInternalAsync()
+    {
+        UpdateConnectionState(ConnectionState.Connecting);
+
+        var wsUrl = _serverUrl.Replace("https://", "wss://").Replace("http://", "ws://");
         
         try
         {
+            _webSocket?.Dispose();
             _webSocket = new ClientWebSocket();
             _cts = new CancellationTokenSource();
             
             await _webSocket.ConnectAsync(new Uri($"{wsUrl}/ws"), _cts.Token);
             _isConnected = true;
+            _reconnectAttempts = 0;
+            _isReconnecting = false;
             
-            ConnectionStateChanged?.Invoke(this, ConnectionState.Connected);
+            UpdateConnectionState(ConnectionState.Connected);
             
             _ = ReceiveLoopAsync();
             
@@ -69,7 +94,8 @@ public class NetworkService : INetworkService
         }
         catch (Exception ex)
         {
-            ConnectionStateChanged?.Invoke(this, ConnectionState.Failed);
+            _isConnected = false;
+            UpdateConnectionState(ConnectionState.Failed);
             return false;
         }
     }
@@ -87,18 +113,48 @@ public class NetworkService : INetworkService
         _webSocket = null;
         _isConnected = false;
         
-        ConnectionStateChanged?.Invoke(this, ConnectionState.Disconnected);
+        UpdateConnectionState(ConnectionState.Disconnected);
+    }
+
+    public async Task ReconnectAsync()
+    {
+        if (_isReconnecting)
+            return;
+
+        _isReconnecting = true;
+
+        while (_reconnectAttempts < MaxReconnectAttempts && !_isConnected)
+        {
+            var delay = _reconnectAttempts < ReconnectDelays.Length 
+                ? ReconnectDelays[_reconnectAttempts] 
+                : ReconnectDelays[^1];
+
+            UpdateConnectionState(ConnectionState.Reconnecting);
+            await Task.Delay(delay);
+
+            _reconnectAttempts++;
+            var success = await ConnectInternalAsync();
+
+            if (success)
+            {
+                _isReconnecting = false;
+                return;
+            }
+        }
+
+        _isReconnecting = false;
+        UpdateConnectionState(ConnectionState.Failed);
     }
 
     public async Task SendMessageAsync(ChatMessage message)
     {
-        if (!_isConnected || _webSocket?.State != WebSocketState.Open)
+        if (!IsConnected)
             throw new InvalidOperationException("Not connected");
 
         var json = JsonSerializer.Serialize(message);
         var bytes = Encoding.UTF8.GetBytes(json);
         
-        await _webSocket.SendAsync(
+        await _webSocket!.SendAsync(
             new ArraySegment<byte>(bytes), 
             WebSocketMessageType.Text, 
             true, 
@@ -137,7 +193,8 @@ public class NetworkService : INetworkService
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    await DisconnectAsync();
+                    _isConnected = false;
+                    _ = ReconnectAsync();
                     break;
                 }
 
@@ -156,11 +213,21 @@ public class NetworkService : INetworkService
         catch (WebSocketException)
         {
             _isConnected = false;
-            ConnectionStateChanged?.Invoke(this, ConnectionState.Reconnecting);
+            _ = ReconnectAsync();
         }
         catch (OperationCanceledException)
         {
             // Normal cancellation
         }
+        catch (Exception ex)
+        {
+            _isConnected = false;
+            _ = ReconnectAsync();
+        }
+    }
+
+    private void UpdateConnectionState(ConnectionState state)
+    {
+        ConnectionStateChanged?.Invoke(this, state);
     }
 }
