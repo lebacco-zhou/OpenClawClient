@@ -30,8 +30,8 @@ public class CryptoService : ICryptoService
         if (string.IsNullOrEmpty(plainText))
             return string.Empty;
 
-        using var aes = AesGcm.Create();
         var keyBytes = Encoding.UTF8.GetBytes(key);
+        using var aes = new AesGcm(keyBytes);
         var iv = new byte[IvSize];
         RandomNumberGenerator.Fill(iv);
         
@@ -75,8 +75,8 @@ public class CryptoService : ICryptoService
 
     public byte[] EncryptFile(byte[] fileData, string key)
     {
-        using var aes = AesGcm.Create();
         var keyBytes = Encoding.UTF8.GetBytes(key);
+        using var aes = new AesGcm(keyBytes);
         var iv = new byte[IvSize];
         RandomNumberGenerator.Fill(iv);
 
