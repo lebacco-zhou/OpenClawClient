@@ -74,13 +74,18 @@
 
 ### 方法 1: 从 Git 仓库克隆
 
+<div class="note">
+<strong>📌 注意：</strong> 需要先在 GitHub 创建仓库并推送代码。<br>
+参考文档：<code>docs/GITHUB-PUSH.md</code>
+</div>
+
 ```cmd
 :: 创建项目目录
 mkdir C:\Projects
 cd C:\Projects
 
-:: 克隆项目
-git clone <repository-url> OpenClawClient
+:: 克隆项目（替换为你的 GitHub 地址）
+git clone https://github.com/你的用户名/OpenClawClient.git
 
 :: 进入项目目录
 cd OpenClawClient
