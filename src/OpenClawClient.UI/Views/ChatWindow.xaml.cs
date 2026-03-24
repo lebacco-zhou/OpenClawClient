@@ -120,7 +120,7 @@ public partial class ChatWindow : Window
                 Margin = new Thickness(5, 3),
                 Padding = new Thickness(12, 8),
                 CornerRadius = new CornerRadius(12),
-                BorderBrush = (Brush)FindResource("MaterialDesignDivider"),
+                BorderBrush = Brushes.LightGray,
                 BorderThickness = new Thickness(1),
                 MaxWidth = 600
             };
@@ -128,17 +128,17 @@ public partial class ChatWindow : Window
             // 根据角色设置背景和对齐
             if (message.Role == MessageRole.User)
             {
-                border.Background = (Brush)FindResource("PrimaryHueLightBrush");
+                border.Background = new SolidColorBrush(Color.FromRgb(232, 224, 250)); // Light purple
                 border.HorizontalAlignment = HorizontalAlignment.Right;
             }
             else if (message.Role == MessageRole.System)
             {
-                border.Background = (Brush)FindResource("MaterialDesignDivider");
+                border.Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)); // Light gray
                 border.HorizontalAlignment = HorizontalAlignment.Center;
             }
             else
             {
-                border.Background = (Brush)FindResource("MaterialDesignPaper");
+                border.Background = Brushes.White;
                 border.HorizontalAlignment = HorizontalAlignment.Left;
             }
 
@@ -178,7 +178,7 @@ public partial class ChatWindow : Window
             {
                 Text = message.Timestamp.ToString("HH:mm"),
                 FontSize = 10,
-                Foreground = (Brush)FindResource("MaterialDesignBodyLight")
+                Foreground = Brushes.Gray
             };
             statusStack.Children.Add(timestampText);
 
