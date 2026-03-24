@@ -12,9 +12,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OpenClawClient.UI\OpenClawClient.UI.csproj" />
+    <ProjectReference Include="..\OpenClawClient.Core\OpenClawClient.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
