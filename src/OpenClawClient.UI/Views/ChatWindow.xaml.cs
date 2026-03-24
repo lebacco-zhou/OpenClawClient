@@ -2,19 +2,21 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using OpenClawClient.Core.Models;
 using OpenClawClient.Core.Services;
 
 namespace OpenClawClient.UI.Views;
 
 /// <summary>
-/// ChatWindow.xaml 的交互逻辑
+/// ChatWindow.xaml 的交互逻辑 - Phase 2 增强版
 /// </summary>
 public partial class ChatWindow : Window
 {
     private readonly LoginConfig _config;
     private readonly INetworkService _networkService;
     private readonly ICryptoService _cryptoService = new CryptoService();
+    private bool _isConnected = false;
 
     public ChatWindow(LoginConfig config, INetworkService networkService)
     {
@@ -22,12 +24,18 @@ public partial class ChatWindow : Window
         _config = config;
         _networkService = networkService;
         
-        // 订阅消息接收事件
+        // 订阅事件
         _networkService.MessageReceived += OnMessageReceived;
         _networkService.ConnectionStateChanged += OnConnectionStateChanged;
         
         // 允许拖拽
         MessagesListBox.AllowDrop = true;
+        
+        // 粘贴事件
+        InputTextBox.PreviewExecuted += OnPreviewExecuted;
+        
+        // 初始化连接状态
+        UpdateConnectionStatus(ConnectionState.Connecting);
     }
 
     private async void SendButton_Click(object sender, RoutedEventArgs e)
@@ -46,7 +54,9 @@ public partial class ChatWindow : Window
             Content = content,
             Type = MessageType.Text,
             Role = MessageRole.User,
-            IsEncrypted = true
+            Timestamp = DateTime.Now,
+            IsEncrypted = true,
+            Status = DeliveryStatus.Pending
         };
 
         // 加密消息内容
@@ -58,10 +68,16 @@ public partial class ChatWindow : Window
         try
         {
             await _networkService.SendMessageAsync(message);
+            message.Status = DeliveryStatus.Sent;
+            
+            // 添加到消息列表（本地显示）
+            AddMessageToUI(message);
             InputTextBox.Clear();
         }
         catch (Exception ex)
         {
+            message.Status = DeliveryStatus.Failed;
+            AddMessageToUI(message);
             MessageBox.Show($"发送失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -91,7 +107,11 @@ public partial class ChatWindow : Window
             }
         }
 
-        // 更新 UI（需要在 UI 线程）
+        AddMessageToUI(message);
+    }
+
+    private void AddMessageToUI(ChatMessage message)
+    {
         Dispatcher.Invoke(() =>
         {
             MessagesListBox.Items.Add(message);
@@ -101,9 +121,25 @@ public partial class ChatWindow : Window
 
     private void OnConnectionStateChanged(object? sender, ConnectionState state)
     {
+        _isConnected = (state == ConnectionState.Connected);
+        UpdateConnectionStatus(state);
+    }
+
+    private void UpdateConnectionStatus(ConnectionState state)
+    {
         Dispatcher.Invoke(() =>
         {
-            Title = $"OpenClaw Client - {state}";
+            var statusText = state switch
+            {
+                ConnectionState.Disconnected => "● 已断开",
+                ConnectionState.Connecting => "○ 连接中...",
+                ConnectionState.Connected => "● 已连接",
+                ConnectionState.Reconnecting => "○ 重连中...",
+                ConnectionState.Failed => "✕ 连接失败",
+                _ => "? 未知"
+            };
+            
+            Title = $"OpenClaw Client - {statusText}";
         });
     }
 
@@ -128,32 +164,122 @@ public partial class ChatWindow : Window
         }
     }
 
-    private async Task SendFileAsync(string filePath)
+    private void OnPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        // 处理粘贴命令
+        if (e.Command == ApplicationCommands.Paste)
+        {
+            _ = HandlePasteAsync();
+            e.Handled = true;
+        }
+    }
+
+    private async Task HandlePasteAsync()
     {
         try
         {
-            var fileData = await File.ReadAllBytesAsync(filePath);
-            var fileName = Path.GetFileName(filePath);
-            
-            // 上传文件
-            var result = await _networkService.UploadFileAsync(fileData, fileName);
-            
-            // 发送文件消息
-            var message = new ChatMessage
+            if (Clipboard.ContainsFileDropList())
             {
-                Content = $"发送文件：{fileName}",
-                Type = MessageType.File,
-                Role = MessageRole.User,
-                FileName = fileName,
-                FilePath = result,
-                IsEncrypted = false // 文件本身已加密传输
-            };
-
-            await _networkService.SendMessageAsync(message);
+                var files = Clipboard.GetFileDropList();
+                foreach (string file in files)
+                {
+                    await SendFileAsync(file);
+                }
+            }
+            else if (Clipboard.ContainsImage())
+            {
+                var image = Clipboard.GetImage();
+                if (image != null)
+                {
+                    await SendImageAsync(image);
+                }
+            }
+            else if (Clipboard.ContainsText())
+            {
+                InputTextBox.Text = Clipboard.GetText();
+            }
         }
         catch (Exception ex)
         {
+            MessageBox.Show($"粘贴失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async Task SendFileAsync(string filePath)
+    {
+        if (!_isConnected)
+        {
+            MessageBox.Show("未连接到服务器，无法发送文件", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var fileName = Path.GetFileName(filePath);
+        var message = new ChatMessage
+        {
+            Content = $"📎 发送文件：{fileName}",
+            Type = MessageType.File,
+            Role = MessageRole.User,
+            FileName = fileName,
+            Timestamp = DateTime.Now,
+            IsEncrypted = false
+        };
+
+        AddMessageToUI(message);
+
+        try
+        {
+            var fileData = await File.ReadAllBytesAsync(filePath);
+            var result = await _networkService.UploadFileAsync(fileData, fileName);
+            
+            message.FilePath = result;
+            message.Status = DeliveryStatus.Sent;
+            
+            // 更新消息状态（可选：显示上传成功）
+        }
+        catch (Exception ex)
+        {
+            message.Status = DeliveryStatus.Failed;
             MessageBox.Show($"发送文件失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async Task SendImageAsync(System.Windows.Media.ImageSource image)
+    {
+        if (!_isConnected)
+        {
+            MessageBox.Show("未连接到服务器，无法发送图片", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // 将图片保存为临时文件
+        var tempFile = Path.Combine(Path.GetTempPath(), $"openclaw_{Guid.NewGuid():N}.png");
+        
+        try
+        {
+            var encoder = new PngBitmapEncoder();
+            if (image is BitmapSource bitmap)
+            {
+                encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            }
+
+            using (var stream = new FileStream(tempFile, FileMode.Create))
+            {
+                encoder.Save(stream);
+            }
+
+            await SendFileAsync(tempFile);
+        }
+        finally
+        {
+            // 清理临时文件
+            if (File.Exists(tempFile))
+            {
+                try
+                {
+                    File.Delete(tempFile);
+                }
+                catch { }
+            }
         }
     }
 }
