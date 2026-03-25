@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using OpenClawClient.Core.Models;
 using OpenClawClient.Core.Services;
@@ -117,28 +118,28 @@ public partial class ChatWindow : Window
             // 设置消息气泡样式
             var border = new Border
             {
-                Margin = new Thickness(5, 3),
-                Padding = new Thickness(12, 8),
+                Margin = new Thickness(5, 3, 5, 3),
+                Padding = new Thickness(12, 8, 12, 8),
                 CornerRadius = new CornerRadius(12),
-                BorderBrush = Brushes.LightGray,
-                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.FromArgb(255, 211, 211, 211)), // Light gray
+                BorderThickness = new Thickness(1, 1, 1, 1),
                 MaxWidth = 600
             };
 
             // 根据角色设置背景和对齐
             if (message.Role == MessageRole.User)
             {
-                border.Background = new SolidColorBrush(Color.FromRgb(232, 224, 250)); // Light purple
+                border.Background = new SolidColorBrush(Color.FromArgb(255, 232, 224, 250)); // Light purple
                 border.HorizontalAlignment = HorizontalAlignment.Right;
             }
             else if (message.Role == MessageRole.System)
             {
-                border.Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)); // Light gray
+                border.Background = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240)); // Light gray
                 border.HorizontalAlignment = HorizontalAlignment.Center;
             }
             else
             {
-                border.Background = Brushes.White;
+                border.Background = new SolidColorBrush(Colors.White);
                 border.HorizontalAlignment = HorizontalAlignment.Left;
             }
 
@@ -178,7 +179,7 @@ public partial class ChatWindow : Window
             {
                 Text = message.Timestamp.ToString("HH:mm"),
                 FontSize = 10,
-                Foreground = Brushes.Gray
+                Foreground = new SolidColorBrush(Colors.Gray)
             };
             statusStack.Children.Add(timestampText);
 
