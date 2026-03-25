@@ -31,7 +31,7 @@ public class CryptoService : ICryptoService
             return string.Empty;
 
         var keyBytes = Encoding.UTF8.GetBytes(key);
-        using var aes = new AesGcm(keyBytes, tagSize: 16);
+        using var aes = new AesGcm(keyBytes);
         var iv = new byte[IvSize];
         RandomNumberGenerator.Fill(iv);
         
@@ -56,7 +56,7 @@ public class CryptoService : ICryptoService
             return string.Empty;
 
         var keyBytes = Encoding.UTF8.GetBytes(key);
-        using var aes = new AesGcm(keyBytes, tagSize: 16);
+        using var aes = new AesGcm(keyBytes);
         var fullCipher = Convert.FromBase64String(cipherText);
 
         var iv = new byte[IvSize];
@@ -76,7 +76,7 @@ public class CryptoService : ICryptoService
     public byte[] EncryptFile(byte[] fileData, string key)
     {
         var keyBytes = Encoding.UTF8.GetBytes(key);
-        using var aes = new AesGcm(keyBytes, tagSize: 16);
+        using var aes = new AesGcm(keyBytes);
         var iv = new byte[IvSize];
         RandomNumberGenerator.Fill(iv);
 
@@ -96,7 +96,7 @@ public class CryptoService : ICryptoService
     public byte[] DecryptFile(byte[] encryptedData, string key)
     {
         var keyBytes = Encoding.UTF8.GetBytes(key);
-        using var aes = new AesGcm(keyBytes, tagSize: 16);
+        using var aes = new AesGcm(keyBytes);
 
         var iv = new byte[IvSize];
         var tag = new byte[TagSize];
