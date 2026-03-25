@@ -34,6 +34,9 @@ public partial class LoginView : Window
             DownloadPathTextBox.Text = _savedConfig.DownloadPath;
             RememberLoginCheckBox.IsChecked = _savedConfig.RememberLogin;
             AutoSubfolderCheckBox.IsChecked = _savedConfig.AutoSubfolder;
+            
+            // 设置模型选择
+            SetModelSelection(_savedConfig.SelectedModel);
         }
         else
         {
@@ -41,7 +44,49 @@ public partial class LoginView : Window
             DownloadPathTextBox.Text = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 "Downloads", "OpenClaw");
+            
+            // 默认模型选择
+            SetModelSelection("qwen3.5-plus");
         }
+    }
+    
+    private void SetModelSelection(string modelName)
+    {
+        switch (modelName.ToLower())
+        {
+            case "qwen3.5-plus":
+                ModelComboBox.SelectedIndex = 0;
+                break;
+            case "qwen3-coder-plus":
+                ModelComboBox.SelectedIndex = 1;
+                break;
+            case "qwen3-coder-max":
+                ModelComboBox.SelectedIndex = 2;
+                break;
+            case "qwen3-max":
+                ModelComboBox.SelectedIndex = 3;
+                break;
+            case "qwen2.5":
+                ModelComboBox.SelectedIndex = 4;
+                break;
+            default:
+                ModelComboBox.SelectedIndex = 0; // 默认 Qwen 3.5 Plus
+                break;
+        }
+    }
+    
+    private string GetSelectedModel()
+    {
+        return ModelComboBox.SelectedIndex switch
+        {
+            0 => "qwen3.5-plus",
+            1 => "qwen3-coder-plus", 
+            2 => "qwen3-coder-max",
+            3 => "qwen3-max",
+            4 => "qwen2.5",
+            5 => "custom-model", // Custom Model
+            _ => "qwen3.5-plus" // 默认
+        };
     }
 
     private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -85,6 +130,7 @@ public partial class LoginView : Window
         {
             ServerUrl = ServerUrlTextBox.Text.Trim(),
             GatewayToken = token,
+            SelectedModel = GetSelectedModel(),
             DownloadPath = DownloadPathTextBox.Text,
             AutoSubfolder = AutoSubfolderCheckBox.IsChecked ?? true,
             RememberLogin = RememberLoginCheckBox.IsChecked ?? true

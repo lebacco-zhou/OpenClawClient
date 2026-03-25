@@ -18,12 +18,14 @@ public partial class ChatWindow : Window
     private readonly INetworkService _networkService;
     private readonly ICryptoService _cryptoService = new CryptoService();
     private bool _isConnected = false;
+    private string _selectedModel; // 存储选中的模型
 
     public ChatWindow(LoginConfig config, INetworkService networkService)
     {
         InitializeComponent();
         _config = config;
         _networkService = networkService;
+        _selectedModel = config.SelectedModel ?? "qwen3.5-plus";  // 初始化模型选择
         
         // 订阅事件
         _networkService.MessageReceived += OnMessageReceived;
@@ -37,6 +39,9 @@ public partial class ChatWindow : Window
         
         // 初始化连接状态
         UpdateConnectionStatus(ConnectionState.Connecting);
+        
+        // 在标题中显示模型信息
+        Title += $" - [{_selectedModel}]";
     }
 
     private async void SendButton_Click(object sender, RoutedEventArgs e)
@@ -102,9 +107,11 @@ public partial class ChatWindow : Window
             {
                 message.Content = _cryptoService.Decrypt(message.Content, _config.AesKey);
             }
-            catch
+            catch (Exception ex)
             {
-                // 解密失败，显示原始内容
+                // 解密失败，显示原始内容和错误信息
+                Console.WriteLine($"解密失败: {ex.Message}");
+                // 不修改原始内容，继续显示
             }
         }
 
@@ -175,9 +182,10 @@ public partial class ChatWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(0, 5, 0, 0)
             };
+            
             var timestampText = new TextBlock
             {
-                Text = message.Timestamp.ToString("HH:mm"),
+                Text = $"{message.Timestamp:HH:mm}",
                 FontSize = 10,
                 Foreground = new SolidColorBrush(Colors.Gray)
             };
@@ -187,6 +195,18 @@ public partial class ChatWindow : Window
             {
                 var lockText = new TextBlock { Text = " 🔒", FontSize = 10 };
                 statusStack.Children.Add(lockText);
+            }
+
+            // 显示模型信息（如果是系统消息）
+            if (message.Role == MessageRole.System && !string.IsNullOrEmpty(_selectedModel))
+            {
+                var modelText = new TextBlock { 
+                    Text = $" {_selectedModel}", 
+                    FontSize = 10,
+                    Foreground = new SolidColorBrush(Colors.Blue),
+                    FontStyle = FontStyles.Italic
+                };
+                statusStack.Children.Add(modelText);
             }
 
             var statusText = new TextBlock

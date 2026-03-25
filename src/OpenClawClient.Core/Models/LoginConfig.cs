@@ -8,6 +8,7 @@ public class LoginConfig
     public string ServerUrl { get; set; } = "https://www.lebacco.cn:8443";
     public string GatewayToken { get; set; } = string.Empty;
     public string? AesKey { get; set; }
+    public string SelectedModel { get; set; } = "qwen3.5-plus"; // 默认模型
     public string DownloadPath { get; set; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         "Downloads", "OpenClaw");

@@ -64,14 +64,31 @@
             </DockPanel>
 
             <!-- Options -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                <CheckBox x:Name="RememberLoginCheckBox"
-                         Content="记住登录"
-                         IsChecked="True"
-                         Margin="0,0,20,0"/>
-                <CheckBox x:Name="AutoSubfolderCheckBox"
-                         Content="自动创建日期子文件夹"
-                         IsChecked="True"/>
+            <StackPanel Margin="0,0,0,15">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <CheckBox x:Name="RememberLoginCheckBox"
+                             Content="记住登录"
+                             IsChecked="True"
+                             Margin="0,0,20,0"/>
+                    <CheckBox x:Name="AutoSubfolderCheckBox"
+                             Content="自动创建日期子文件夹"
+                             IsChecked="True"/>
+                </StackPanel>
+                
+                <!-- Model Selection -->
+                <Label Content="AI 模型选择：" FontSize="12" Margin="0,0,0,5"/>
+                <ComboBox x:Name="ModelComboBox"
+                         materialDesign:HintAssist.Hint="选择 AI 模型"
+                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                         SelectedIndex="0"
+                         Margin="0,0,0,10">
+                    <ComboBoxItem Content="Qwen 3.5 Plus"/>
+                    <ComboBoxItem Content="Qwen 3 Coder Plus"/>
+                    <ComboBoxItem Content="Qwen 3 Coder Max"/>
+                    <ComboBoxItem Content="Qwen 3 Max"/>
+                    <ComboBoxItem Content="Qwen 2.5"/>
+                    <ComboBoxItem Content="Custom Model"/>
+                </ComboBox>
             </StackPanel>
 
             <!-- Error Message -->
