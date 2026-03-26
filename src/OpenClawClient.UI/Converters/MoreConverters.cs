@@ -6,57 +6,9 @@ using OpenClawClient.Core.Models;
 namespace OpenClawClient.UI.Converters;
 
 /// <summary>
-/// 消息角色转对齐方式转换器
+/// 消息状态转符号转换器
 /// </summary>
-public class RoleToAlignmentConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is MessageRole role)
-        {
-            return role switch
-            {
-                MessageRole.User => HorizontalAlignment.Right,
-                MessageRole.Assistant => HorizontalAlignment.Left,
-                MessageRole.System => HorizontalAlignment.Center,
-                _ => HorizontalAlignment.Left
-            };
-        }
-        return HorizontalAlignment.Left;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
-/// 文件类型转可见性转换器
-/// </summary>
-public class FileTypeToVisibilityConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is MessageType type)
-        {
-            return (type == MessageType.File || type == MessageType.Image)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-        }
-        return Visibility.Collapsed;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
-/// 发送状态转图标转换器
-/// </summary>
-public class StatusToIconConverter : IValueConverter
+public class StatusToSymbolConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -72,6 +24,74 @@ public class StatusToIconConverter : IValueConverter
             };
         }
         return "";
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// 消息类型转可见性转换器
+/// </summary>
+public class MessageTypeToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is MessageType type)
+        {
+            return (type == MessageType.File || type == MessageType.Image) 
+                ? Visibility.Visible 
+                : Visibility.Collapsed;
+        }
+        return Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// 图像类型转可见性转换器
+/// </summary>
+public class ImageTypeToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is MessageType type)
+        {
+            return type == MessageType.Image ? Visibility.Visible : Visibility.Collapsed;
+        }
+        return Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// 消息角色转边框颜色转换器
+/// </summary>
+public class RoleToBorderBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is MessageRole role)
+        {
+            return role switch
+            {
+                MessageRole.User => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(102, 51, 153)), // Purple
+                MessageRole.Assistant => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(204, 204, 204)), // Gray
+                MessageRole.System => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(180, 180, 180)), // Light Gray
+                _ => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(204, 204, 204))
+            };
+        }
+        return new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(204, 204, 204));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

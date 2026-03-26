@@ -51,30 +51,82 @@
                     <VirtualizingStackPanel/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="5,3" Padding="12,8" CornerRadius="12"
-                            BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    <Border x:Name="MessageBorder" 
+                            Margin="5,3" 
+                            Padding="12,8" 
+                            CornerRadius="12"
                             BorderThickness="1"
                             MaxWidth="600">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Role}" Value="User">
+                                        <Setter Property="Background" Value="#663399"/>
+                                        <Setter Property="BorderBrush" Value="#552288"/>
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Role}" Value="Assistant">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Role}" Value="System">
+                                        <Setter Property="Background" Value="#F0F0F0"/>
+                                        <Setter Property="BorderBrush" Value="#DDDDDD"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <StackPanel>
                             <!-- File/Image Preview -->
-                            <StackPanel>
+                            <StackPanel Visibility="{Binding Type, Converter={StaticResource MessageTypeToVisibilityConverter}}">
                                 <Image Source="{Binding FilePath}" 
                                        MaxHeight="200" MaxWidth="400"
                                        Stretch="Uniform"
                                        Margin="0,0,0,5"
                                        Cursor="Hand"
-                                       MouseLeftButtonUp="Image_MouseLeftButtonUp"/>
+                                       MouseLeftButtonUp="Image_MouseLeftButtonUp"
+                                       Visibility="{Binding Type, Converter={StaticResource ImageTypeToVisibilityConverter}}"/>
                                 <TextBlock Text="{Binding FileName}" 
                                           FontWeight="SemiBold"
                                           Margin="0,0,0,5"/>
                             </StackPanel>
                             
                             <!-- Message Content -->
-                            <TextBlock Text="{Binding Content}" 
+                            <TextBlock x:Name="ContentText" 
+                                      Text="{Binding Content}" 
                                       TextWrapping="Wrap"
-                                      FontSize="14"/>
+                                      FontSize="14">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Role}" Value="User">
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Role}" Value="Assistant">
+                                                <Setter Property="Foreground" Value="#333333"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Role}" Value="System">
+                                                <Setter Property="Foreground" Value="#666666"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                             
                             <!-- Timestamp and Status -->
                             <StackPanel Orientation="Horizontal" 
@@ -82,10 +134,11 @@
                                        Margin="0,5,0,0">
                                 <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
                                           FontSize="10"
-                                          Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                          Foreground="#888888"/>
                                 <TextBlock Text=" 🔒"
-                                          FontSize="10"/>
-                                <TextBlock Text="{Binding Status}"
+                                          FontSize="10"
+                                          Visibility="{Binding IsEncrypted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                <TextBlock Text="{Binding Status, Converter={StaticResource StatusToSymbolConverter}}"
                                           FontSize="10"
                                           Margin="5,0,0,0"/>
                             </StackPanel>

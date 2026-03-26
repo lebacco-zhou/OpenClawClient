@@ -1,6 +1,7 @@
 <Application x:Class="OpenClawClient.Desktop.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:OpenClawClient.UI.Converters;assembly=OpenClawClient.UI"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              StartupUri="pack://application:,,,/OpenClawClient.UI;component/Views/LoginView.xaml">
     <Application.Resources>
@@ -9,6 +10,12 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:StatusToSymbolConverter x:Key="StatusToSymbolConverter"/>
+            <converters:MessageTypeToVisibilityConverter x:Key="MessageTypeToVisibilityConverter"/>
+            <converters:ImageTypeToVisibilityConverter x:Key="ImageTypeToVisibilityConverter"/>
+            <converters:RoleToBorderBrushConverter x:Key="RoleToBorderBrushConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
