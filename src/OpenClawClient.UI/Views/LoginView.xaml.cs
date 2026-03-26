@@ -1,7 +1,5 @@
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using Microsoft.Win32;
 using OpenClawClient.Core.Models;
 using OpenClawClient.Core.Services;
 
@@ -31,75 +29,16 @@ public partial class LoginView : Window
         if (_savedConfig != null)
         {
             ServerUrlTextBox.Text = _savedConfig.ServerUrl;
-            DownloadPathTextBox.Text = _savedConfig.DownloadPath;
-            RememberLoginCheckBox.IsChecked = _savedConfig.RememberLogin;
-            AutoSubfolderCheckBox.IsChecked = _savedConfig.AutoSubfolder;
-            
-            // 设置模型选择
-            SetModelSelection(_savedConfig.SelectedModel);
+            // 如果用户选择记住登录，则填充Token
+            if (_savedConfig.RememberLogin)
+            {
+                TokenPasswordBox.Password = _savedConfig.GatewayToken;
+            }
         }
         else
         {
-            // 默认下载路径
-            DownloadPathTextBox.Text = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Downloads", "OpenClaw");
-            
-            // 默认模型选择
-            SetModelSelection("qwen3.5-plus");
-        }
-    }
-    
-    private void SetModelSelection(string modelName)
-    {
-        switch (modelName.ToLower())
-        {
-            case "qwen3.5-plus":
-                ModelComboBox.SelectedIndex = 0;
-                break;
-            case "qwen3-coder-plus":
-                ModelComboBox.SelectedIndex = 1;
-                break;
-            case "qwen3-coder-max":
-                ModelComboBox.SelectedIndex = 2;
-                break;
-            case "qwen3-max":
-                ModelComboBox.SelectedIndex = 3;
-                break;
-            case "qwen2.5":
-                ModelComboBox.SelectedIndex = 4;
-                break;
-            default:
-                ModelComboBox.SelectedIndex = 0; // 默认 Qwen 3.5 Plus
-                break;
-        }
-    }
-    
-    private string GetSelectedModel()
-    {
-        return ModelComboBox.SelectedIndex switch
-        {
-            0 => "qwen3.5-plus",
-            1 => "qwen3-coder-plus", 
-            2 => "qwen3-coder-max",
-            3 => "qwen3-max",
-            4 => "qwen2.5",
-            5 => "custom-model", // Custom Model
-            _ => "qwen3.5-plus" // 默认
-        };
-    }
-
-    private void BrowseButton_Click(object sender, RoutedEventArgs e)
-    {
-        var dialog = new OpenFolderDialog
-        {
-            Title = "选择文件下载路径",
-            InitialDirectory = DownloadPathTextBox.Text
-        };
-
-        if (dialog.ShowDialog() == true)
-        {
-            DownloadPathTextBox.Text = dialog.FolderName;
+            // 默认服务器地址
+            ServerUrlTextBox.Text = "https://www.lebacco.cn:8443";
         }
     }
 
@@ -119,30 +58,20 @@ public partial class LoginView : Window
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(DownloadPathTextBox.Text))
-        {
-            ShowError("请选择文件下载路径");
-            return;
-        }
-
-        // 准备配置
+        // 准备配置 - 使用默认值
         var config = new LoginConfig
         {
             ServerUrl = ServerUrlTextBox.Text.Trim(),
             GatewayToken = token,
-            SelectedModel = GetSelectedModel(),
-            DownloadPath = DownloadPathTextBox.Text,
-            AutoSubfolder = AutoSubfolderCheckBox.IsChecked ?? true,
-            RememberLogin = RememberLoginCheckBox.IsChecked ?? true
+            SelectedModel = "qwen3.5-plus", // 默认模型
+            DownloadPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Downloads", "OpenClaw"), // 默认下载路径
+            AutoSubfolder = true, // 默认自动创建月度子文件夹
+            RememberLogin = false // 默认不记住，除非用户在设置中启用
         };
 
-        // 保存配置（如果选择记住登录）
-        if (config.RememberLogin)
-        {
-            await _configService.SaveConfigAsync(config);
-        }
-
-        // 尝试连接
+        // 尝连接
         LoginButton.IsEnabled = false;
         LoginButton.Content = "连接中...";
         ErrorTextBlock.Visibility = Visibility.Collapsed;
@@ -173,6 +102,13 @@ public partial class LoginView : Window
             LoginButton.IsEnabled = true;
             LoginButton.Content = "登 录";
         }
+    }
+
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        // 打开设置窗口
+        var settingsWindow = new SettingsView(_savedConfig ?? new LoginConfig());
+        settingsWindow.ShowDialog();
     }
 
     private void ShowError(string message)

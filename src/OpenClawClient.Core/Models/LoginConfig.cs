@@ -12,9 +12,11 @@ public class LoginConfig
     public string DownloadPath { get; set; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         "Downloads", "OpenClaw");
-    public bool AutoSubfolder { get; set; } = true;
+    public bool AutoSubfolder { get; set; } = true; // 用于按月自动创建子文件夹
     public bool RememberLogin { get; set; } = true;
     public WindowPosition? WindowPosition { get; set; }
+    public int ReconnectInterval { get; set; } = 10;
+    public int MessageHistoryCount { get; set; } = 50;
 }
 
 public class WindowPosition

@@ -10,12 +10,43 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Model Selection Bar -->
+        <Border Grid.Row="0" Background="{DynamicResource MaterialDesignCardBackground}" Padding="10,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Text="🤖 AI 模型:" 
+                          Foreground="{DynamicResource MaterialDesignBody}"
+                          VerticalAlignment="Center"
+                          FontWeight="SemiBold"
+                          Margin="0,0,10,0"/>
+                
+                <ComboBox x:Name="ModelComboBox"
+                         Grid.Column="1"
+                         materialDesign:HintAssist.Hint="选择 AI 模型"
+                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                         SelectedIndex="0"
+                         SelectionChanged="ModelComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Qwen 3.5 Plus"/>
+                    <ComboBoxItem Content="Qwen 3 Coder Plus"/>
+                    <ComboBoxItem Content="Qwen 3 Coder Max"/>
+                    <ComboBoxItem Content="Qwen 3 Max"/>
+                    <ComboBoxItem Content="Qwen 2.5"/>
+                    <ComboBoxItem Content="Custom Model"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+
         <!-- Connection Status Bar -->
-        <Border Grid.Row="0" Background="{DynamicResource PrimaryHueMidBrush}" Padding="10,5">
+        <Border Grid.Row="1" Background="{DynamicResource PrimaryHueMidBrush}" Padding="10,5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

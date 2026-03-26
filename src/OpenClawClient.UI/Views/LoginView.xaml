@@ -44,70 +44,39 @@
             <!-- Gateway Token -->
             <PasswordBox x:Name="TokenPasswordBox"
                         materialDesign:HintAssist.Hint="Gateway Token"
-                        materialDesign:HintAssist.HelperText="31 位十六进制令牌"
+                        materialDesign:HintAssist.HelperText="输入 Gateway Token"
                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                        Margin="0,0,0,20"
+                        Margin="0,0,0,30"
                         materialDesign:PasswordBoxAssist.Password="{x:Null}"/>
 
-            <!-- Download Path -->
-            <DockPanel Margin="0,0,0,20">
-                <Button x:Name="BrowseButton"
-                       Content="浏览"
-                       DockPanel.Dock="Right"
-                       Width="60"
-                       Margin="10,0,0,0"
-                       Click="BrowseButton_Click"/>
-                <TextBox x:Name="DownloadPathTextBox"
-                        materialDesign:HintAssist.Hint="文件下载路径"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        IsReadOnly="True"/>
-            </DockPanel>
-
-            <!-- Options -->
-            <StackPanel Margin="0,0,0,15">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <CheckBox x:Name="RememberLoginCheckBox"
-                             Content="记住登录"
-                             IsChecked="True"
-                             Margin="0,0,20,0"/>
-                    <CheckBox x:Name="AutoSubfolderCheckBox"
-                             Content="自动创建日期子文件夹"
-                             IsChecked="True"/>
-                </StackPanel>
+            <!-- Login and Settings Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
+                <Button x:Name="LoginButton"
+                       Content="登 录"
+                       Style="{StaticResource MaterialDesignRaisedButton}"
+                       Height="45"
+                       Width="120"
+                       FontSize="16"
+                       Click="LoginButton_Click"
+                       materialDesign:ButtonAssist.CornerRadius="8"/>
                 
-                <!-- Model Selection -->
-                <Label Content="AI 模型选择：" FontSize="12" Margin="0,0,0,5"/>
-                <ComboBox x:Name="ModelComboBox"
-                         materialDesign:HintAssist.Hint="选择 AI 模型"
-                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                         SelectedIndex="0"
-                         Margin="0,0,0,10">
-                    <ComboBoxItem Content="Qwen 3.5 Plus"/>
-                    <ComboBoxItem Content="Qwen 3 Coder Plus"/>
-                    <ComboBoxItem Content="Qwen 3 Coder Max"/>
-                    <ComboBoxItem Content="Qwen 3 Max"/>
-                    <ComboBoxItem Content="Qwen 2.5"/>
-                    <ComboBoxItem Content="Custom Model"/>
-                </ComboBox>
+                <Button x:Name="SettingsButton"
+                       Content="设 置"
+                       Style="{StaticResource MaterialDesignRaisedLightButton}"
+                       Height="45"
+                       Width="120"
+                       FontSize="16"
+                       Click="SettingsButton_Click"
+                       materialDesign:ButtonAssist.CornerRadius="8"/>
             </StackPanel>
 
             <!-- Error Message -->
             <TextBlock x:Name="ErrorTextBlock"
                       Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
                       FontSize="12"
-                      Margin="0,0,0,10"
+                      Margin="0,15,0,0"
                       TextWrapping="Wrap"
                       Visibility="Collapsed"/>
         </StackPanel>
-
-        <!-- Login Button -->
-        <Button x:Name="LoginButton"
-               Grid.Row="2"
-               Content="登 录"
-               Style="{StaticResource MaterialDesignRaisedButton}"
-               Height="45"
-               FontSize="16"
-               Click="LoginButton_Click"
-               materialDesign:ButtonAssist.CornerRadius="8"/>
     </Grid>
 </Window>

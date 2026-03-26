@@ -19,6 +19,10 @@ public partial class ChatWindow : Window
     private readonly ICryptoService _cryptoService = new CryptoService();
     private bool _isConnected = false;
     private string _selectedModel; // 存储选中的模型
+    
+    // 模型选择下拉框 (XAML 中定义)
+    private ComboBox? _modelComboBox;
+    private ComboBox ModelComboBox => _modelComboBox ??= this.FindName("ModelComboBox") as ComboBox ?? throw new InvalidOperationException("ModelComboBox not found");
 
     public ChatWindow(LoginConfig config, INetworkService networkService)
     {
@@ -39,6 +43,9 @@ public partial class ChatWindow : Window
         
         // 初始化连接状态
         UpdateConnectionStatus(ConnectionState.Connecting);
+        
+        // 设置模型选择
+        SetModelSelection(_selectedModel);
         
         // 在标题中显示模型信息
         Title += $" - [{_selectedModel}]";
@@ -158,6 +165,54 @@ public partial class ChatWindow : Window
     {
         _isConnected = (state == ConnectionState.Connected);
         UpdateConnectionStatus(state);
+    }
+
+    private void SetModelSelection(string modelName)
+    {
+        switch (modelName.ToLower())
+        {
+            case "qwen3.5-plus":
+                ModelComboBox.SelectedIndex = 0;
+                break;
+            case "qwen3-coder-plus":
+                ModelComboBox.SelectedIndex = 1;
+                break;
+            case "qwen3-coder-max":
+                ModelComboBox.SelectedIndex = 2;
+                break;
+            case "qwen3-max":
+                ModelComboBox.SelectedIndex = 3;
+                break;
+            case "qwen2.5":
+                ModelComboBox.SelectedIndex = 4;
+                break;
+            case "custom-model":
+                ModelComboBox.SelectedIndex = 5;
+                break;
+            default:
+                ModelComboBox.SelectedIndex = 0; // 默认 Qwen 3.5 Plus
+                break;
+        }
+    }
+    
+    private string GetSelectedModel()
+    {
+        return ModelComboBox.SelectedIndex switch
+        {
+            0 => "qwen3.5-plus",
+            1 => "qwen3-coder-plus", 
+            2 => "qwen3-coder-max",
+            3 => "qwen3-max",
+            4 => "qwen2.5",
+            5 => "custom-model",
+            _ => "qwen3.5-plus" // 默认
+        };
+    }
+    
+    private void ModelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        _selectedModel = GetSelectedModel();
+        Title = Title.Split(" - ")[0] + $" - [{_selectedModel}]"; // 更新窗口标题显示当前模型
     }
 
     private void UpdateConnectionStatus(ConnectionState state)
