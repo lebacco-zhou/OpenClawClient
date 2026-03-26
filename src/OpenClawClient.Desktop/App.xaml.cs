@@ -15,10 +15,11 @@ public partial class App : Application
         // 注册转换器资源
         Resources.Add("RoleToBackgroundConverter", new RoleToBackgroundConverter());
         Resources.Add("BoolToVisibilityConverter", new BoolToVisibilityConverter());
-        Resources.Add("RoleToAlignmentConverter", new RoleToAlignmentConverter());
-        Resources.Add("FileTypeToVisibilityConverter", new FileTypeToVisibilityConverter());
-        Resources.Add("StatusToIconConverter", new StatusToIconConverter());
         Resources.Add("ConnectionStateToTextConverter", new ConnectionStateToTextConverter());
         Resources.Add("MessageTypeToIconConverter", new MessageTypeToIconConverter());
+        Resources.Add("StatusToSymbolConverter", new StatusToSymbolConverter());
+        Resources.Add("MessageTypeToVisibilityConverter", new MessageTypeToVisibilityConverter());
+        Resources.Add("ImageTypeToVisibilityConverter", new ImageTypeToVisibilityConverter());
+        Resources.Add("RoleToBorderBrushConverter", new RoleToBorderBrushConverter());
     }
 }
