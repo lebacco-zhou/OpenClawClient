@@ -38,7 +38,7 @@
         <ListBox x:Name="MessagesListBox"
                 Grid.Row="1"
                 BorderThickness="0"
-                Background="Transparent"
+                Background="#F0F0F0"
                 Padding="10"
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.VirtualizationMode="Recycling"

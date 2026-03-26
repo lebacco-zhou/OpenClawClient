@@ -122,32 +122,44 @@ public partial class ChatWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
+            Console.WriteLine($"[ChatWindow] Adding message: Role={message.Role}, Content={message.Content?.Substring(0, Math.Min(50, message.Content?.Length ?? 0))}");
+            
             // 设置消息气泡样式
             var border = new Border
             {
                 Margin = new Thickness(5, 3, 5, 3),
                 Padding = new Thickness(12, 8, 12, 8),
                 CornerRadius = new CornerRadius(12),
-                BorderBrush = new SolidColorBrush(Color.FromArgb(255, 211, 211, 211)), // Light gray
+                BorderBrush = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200)),
                 BorderThickness = new Thickness(1, 1, 1, 1),
-                MaxWidth = 600
+                MaxWidth = 600,
+                Effect = new System.Windows.Media.Effects.DropShadowEffect
+                {
+                    BlurRadius = 4,
+                    ShadowDepth = 1,
+                    Opacity = 0.3
+                }
             };
 
             // 根据角色设置背景和对齐
             if (message.Role == MessageRole.User)
             {
-                border.Background = new SolidColorBrush(Color.FromArgb(255, 232, 224, 250)); // Light purple
+                border.Background = new SolidColorBrush(Color.FromArgb(255, 102, 51, 153)); // Purple
                 border.HorizontalAlignment = HorizontalAlignment.Right;
+                Console.WriteLine("[ChatWindow] User message - purple background");
             }
             else if (message.Role == MessageRole.System)
             {
-                border.Background = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240)); // Light gray
+                border.Background = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
                 border.HorizontalAlignment = HorizontalAlignment.Center;
+                Console.WriteLine("[ChatWindow] System message - gray background");
             }
-            else
+            else // Assistant
             {
-                border.Background = new SolidColorBrush(Colors.White);
+                border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)); // White
                 border.HorizontalAlignment = HorizontalAlignment.Left;
+                border.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                Console.WriteLine("[ChatWindow] Assistant message - white background");
             }
 
             var stackPanel = new StackPanel();
@@ -173,6 +185,17 @@ public partial class ChatWindow : Window
                 TextWrapping = TextWrapping.Wrap,
                 FontSize = 14
             };
+            
+            // 根据角色设置文字颜色
+            if (message.Role == MessageRole.User)
+            {
+                contentText.Foreground = new SolidColorBrush(Colors.White);
+            }
+            else
+            {
+                contentText.Foreground = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
+            }
+            
             stackPanel.Children.Add(contentText);
 
             // 时间戳和状态
