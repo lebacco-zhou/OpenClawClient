@@ -50,7 +50,7 @@
                         materialDesign:PasswordBoxAssist.Password="{x:Null}"/>
 
             <!-- Login and Settings Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
                 <Button x:Name="LoginButton"
                        Content="登 录"
                        Style="{StaticResource MaterialDesignRaisedButton}"
