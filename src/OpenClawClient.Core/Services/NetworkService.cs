@@ -201,26 +201,53 @@ public class NetworkService : INetworkService
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    var message = JsonSerializer.Deserialize<ChatMessage>(json);
+                    Console.WriteLine($"[NetworkService] Received: {json}");
                     
-                    if (message != null)
+                    try
                     {
-                        MessageReceived?.Invoke(this, message);
+                        var message = JsonSerializer.Deserialize<ChatMessage>(json);
+                        
+                        if (message != null)
+                        {
+                            Console.WriteLine($"[NetworkService] Message parsed: Role={message.Role}, Type={message.Type}");
+                            MessageReceived?.Invoke(this, message);
+                        }
+                        else
+                        {
+                            Console.WriteLine("[NetworkService] Message deserialized to null");
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"[NetworkService] Failed to parse message: {ex.Message}");
+                        // 尝试解析为系统消息
+                        var systemMessage = new ChatMessage
+                        {
+                            Content = json,
+                            Role = MessageRole.System,
+                            Type = MessageType.Text,
+                            Timestamp = DateTime.Now,
+                            IsEncrypted = false
+                        };
+                        MessageReceived?.Invoke(this, systemMessage);
                     }
                 }
             }
         }
-        catch (WebSocketException)
+        catch (WebSocketException ex)
         {
+            Console.WriteLine($"[NetworkService] WebSocket error: {ex.Message}");
             _isConnected = false;
             _ = ReconnectAsync();
         }
         catch (OperationCanceledException)
         {
             // Normal cancellation
+            Console.WriteLine("[NetworkService] Receive loop cancelled");
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[NetworkService] Unexpected error: {ex.Message}");
             _isConnected = false;
             _ = ReconnectAsync();
         }
