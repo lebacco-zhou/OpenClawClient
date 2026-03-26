@@ -20,9 +20,7 @@ public partial class ChatWindow : Window
     private bool _isConnected = false;
     private string _selectedModel; // 存储选中的模型
     
-    // 模型选择下拉框 (XAML 中定义)
-    private ComboBox? _modelComboBox;
-    private ComboBox ModelComboBox => _modelComboBox ??= this.FindName("ModelComboBox") as ComboBox ?? throw new InvalidOperationException("ModelComboBox not found");
+    // 模型选择下拉框 (XAML 中定义，自动生成的成员)
 
     public ChatWindow(LoginConfig config, INetworkService networkService)
     {
