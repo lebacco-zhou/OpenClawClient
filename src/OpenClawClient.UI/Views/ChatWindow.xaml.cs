@@ -100,6 +100,15 @@ public partial class ChatWindow : Window
 
     private void OnMessageReceived(object? sender, ChatMessage message)
     {
+        // 过滤掉空消息或系统心跳消息
+        if (string.IsNullOrWhiteSpace(message.Content) && 
+            message.Type != MessageType.File && 
+            message.Type != MessageType.Image)
+        {
+            Console.WriteLine($"[ChatWindow] Filtered empty message: Role={message.Role}, Type={message.Type}");
+            return;
+        }
+
         // 解密消息内容
         if (!string.IsNullOrEmpty(_config.AesKey) && message.IsEncrypted)
         {
@@ -112,6 +121,19 @@ public partial class ChatWindow : Window
                 // 解密失败，显示原始内容和错误信息
                 Console.WriteLine($"解密失败: {ex.Message}");
                 // 不修改原始内容，继续显示
+            }
+        }
+
+        // 过滤掉可能的心跳或其他系统消息
+        if (string.IsNullOrWhiteSpace(message.Content) && 
+            message.Type == MessageType.Text &&
+            message.Role == MessageRole.System)
+        {
+            // 如果是系统消息但没有内容，则忽略
+            if (string.IsNullOrWhiteSpace(message.Content))
+            {
+                Console.WriteLine($"[ChatWindow] Ignoring empty system message");
+                return;
             }
         }
 

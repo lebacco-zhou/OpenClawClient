@@ -205,11 +205,20 @@ public class NetworkService : INetworkService
                     
                     try
                     {
+                        // 尝试解析为 ChatMessage
                         var message = JsonSerializer.Deserialize<ChatMessage>(json);
                         
                         if (message != null)
                         {
-                            Console.WriteLine($"[NetworkService] Message parsed: Role={message.Role}, Type={message.Type}");
+                            Console.WriteLine($"[NetworkService] Message parsed: Role={message.Role}, Type={message.Type}, Content='{message.Content}'");
+                            
+                            // 过滤心跳或系统管理消息
+                            if (ShouldFilterMessage(message, json))
+                            {
+                                Console.WriteLine($"[NetworkService] Filtering system message: {json}");
+                                continue;
+                            }
+                            
                             MessageReceived?.Invoke(this, message);
                         }
                         else
@@ -220,7 +229,15 @@ public class NetworkService : INetworkService
                     catch (JsonException ex)
                     {
                         Console.WriteLine($"[NetworkService] Failed to parse message: {ex.Message}");
-                        // 尝试解析为系统消息
+                        
+                        // 检查是否为心跳或其他系统消息
+                        if (ShouldFilterSystemMessage(json))
+                        {
+                            Console.WriteLine($"[NetworkService] Filtering system message: {json}");
+                            continue;
+                        }
+                        
+                        // 解析为系统消息
                         var systemMessage = new ChatMessage
                         {
                             Content = json,
@@ -256,5 +273,59 @@ public class NetworkService : INetworkService
     private void UpdateConnectionState(ConnectionState state)
     {
         ConnectionStateChanged?.Invoke(this, state);
+    }
+    
+    /// <summary>
+    /// 检查是否应该过滤此消息（心跳、系统管理消息等）
+    /// </summary>
+    private bool ShouldFilterMessage(ChatMessage message, string originalJson)
+    {
+        // 过滤空消息
+        if (string.IsNullOrWhiteSpace(message.Content) && 
+            message.Type == MessageType.Text && 
+            message.Role == MessageRole.System)
+        {
+            return true;
+        }
+        
+        // 检查是否为心跳消息（通常包含特定关键词）
+        if (originalJson.Contains("\"type\":\"heartbeat\"", StringComparison.OrdinalIgnoreCase) ||
+            originalJson.Contains("\"type\":\"ping\"", StringComparison.OrdinalIgnoreCase) ||
+            originalJson.Contains("\"type\":\"pong\"", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        // 检查是否为连接状态消息
+        if (originalJson.Contains("\"connected\":", StringComparison.OrdinalIgnoreCase) ||
+            originalJson.Contains("\"disconnected\":", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /// <summary>
+    /// 检查是否应该过滤系统消息
+    /// </summary>
+    private bool ShouldFilterSystemMessage(string json)
+    {
+        // 过滤心跳消息
+        if (json.Contains("\"type\":\"heartbeat\"", StringComparison.OrdinalIgnoreCase) ||
+            json.Contains("\"type\":\"ping\"", StringComparison.OrdinalIgnoreCase) ||
+            json.Contains("\"type\":\"pong\"", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        // 过滤连接状态消息
+        if (json.Contains("\"connected\":", StringComparison.OrdinalIgnoreCase) ||
+            json.Contains("\"disconnected\":", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        return false;
     }
 }
