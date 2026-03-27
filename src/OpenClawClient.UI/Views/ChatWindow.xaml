@@ -84,7 +84,6 @@
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.VirtualizationMode="Recycling"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                ScrollViewer.VerticalScrollBarWidth="8"
                 AllowDrop="True"
                 Drop="MessagesListBox_Drop"
                 PreviewDragOver="MessagesListBox_PreviewDragOver">
