@@ -5,7 +5,7 @@
         Title="OpenClaw Client - 连接中..." 
         Height="700" Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource MaterialDesignPaper}">
+        Background="{StaticResource BackgroundBrush}">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -16,15 +16,16 @@
         </Grid.RowDefinitions>
 
         <!-- Model Selection Bar -->
-        <Border Grid.Row="0" Background="{DynamicResource MaterialDesignCardBackground}" Padding="10,8">
+        <Border Grid.Row="0" Background="{StaticResource CardBackgroundBrush}" Padding="10,8" CornerRadius="8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="120"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
                 <TextBlock Text="🤖 AI 模型:" 
-                          Foreground="{DynamicResource MaterialDesignBody}"
+                          Foreground="{StaticResource TextPrimaryBrush}"
                           VerticalAlignment="Center"
                           FontWeight="SemiBold"
                           Margin="0,0,10,0"/>
@@ -34,7 +35,10 @@
                          materialDesign:HintAssist.Hint="选择 AI 模型"
                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
                          SelectedIndex="0"
-                         SelectionChanged="ModelComboBox_SelectionChanged">
+                         SelectionChanged="ModelComboBox_SelectionChanged"
+                         Foreground="{StaticResource TextPrimaryBrush}"
+                         Background="Transparent"
+                         BorderBrush="#3A3A3A">
                     <ComboBoxItem Content="Qwen 3.5 Plus"/>
                     <ComboBoxItem Content="Qwen 3 Coder Plus"/>
                     <ComboBoxItem Content="Qwen 3 Coder Max"/>
@@ -42,11 +46,17 @@
                     <ComboBoxItem Content="Qwen 2.5"/>
                     <ComboBoxItem Content="Custom Model"/>
                 </ComboBox>
+                
+                <Button Grid.Column="2" 
+                       Content="🔍"
+                       Style="{StaticResource CircleButtonStyle}"
+                       ToolTip="搜索消息"
+                       Margin="0,0,0,0"/>
             </Grid>
         </Border>
 
         <!-- Connection Status Bar -->
-        <Border Grid.Row="1" Background="{DynamicResource PrimaryHueMidBrush}" Padding="10,5">
+        <Border Grid.Row="1" Background="{StaticResource PrimaryBrush}" Padding="10,5" CornerRadius="8" Margin="0,4,0,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -54,7 +64,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <TextBlock x:Name="ConnectionStatusText"
-                          Text="● 已连接"
+                          Text="🟢 已连接"
                           Foreground="White"
                           FontWeight="SemiBold"/>
                 
@@ -67,13 +77,14 @@
 
         <!-- Messages List -->
         <ListBox x:Name="MessagesListBox"
-                Grid.Row="1"
+                Grid.Row="2"
                 BorderThickness="0"
-                Background="#F0F0F0"
-                Padding="10"
+                Background="{StaticResource BackgroundBrush}"
+                Padding="16"
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.VirtualizationMode="Recycling"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarWidth="8"
                 AllowDrop="True"
                 Drop="MessagesListBox_Drop"
                 PreviewDragOver="MessagesListBox_PreviewDragOver">
@@ -96,28 +107,19 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border x:Name="MessageBorder" 
-                            Margin="5,3" 
-                            Padding="12,8" 
-                            CornerRadius="12"
-                            BorderThickness="1"
+                            Margin="0,8"
                             MaxWidth="600">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Role}" Value="User">
-                                        <Setter Property="Background" Value="#663399"/>
-                                        <Setter Property="BorderBrush" Value="#552288"/>
-                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Style" Value="{StaticResource UserMessageStyle}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Role}" Value="Assistant">
-                                        <Setter Property="Background" Value="White"/>
-                                        <Setter Property="BorderBrush" Value="#CCCCCC"/>
-                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Style" Value="{StaticResource AssistantMessageStyle}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Role}" Value="System">
-                                        <Setter Property="Background" Value="#F0F0F0"/>
-                                        <Setter Property="BorderBrush" Value="#DDDDDD"/>
-                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="Style" Value="{StaticResource SystemMessageStyle}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -128,12 +130,13 @@
                                 <Image Source="{Binding FilePath}" 
                                        MaxHeight="200" MaxWidth="400"
                                        Stretch="Uniform"
-                                       Margin="0,0,0,5"
+                                       Margin="0,0,0,8"
                                        Cursor="Hand"
                                        MouseLeftButtonUp="Image_MouseLeftButtonUp"
                                        Visibility="{Binding Type, Converter={StaticResource ImageTypeToVisibilityConverter}}"/>
                                 <TextBlock Text="{Binding FileName}" 
                                           FontWeight="SemiBold"
+                                          Foreground="{StaticResource TextPrimaryBrush}"
                                           Margin="0,0,0,5"/>
                             </StackPanel>
                             
@@ -141,7 +144,9 @@
                             <TextBlock x:Name="ContentText" 
                                       Text="{Binding Content}" 
                                       TextWrapping="Wrap"
-                                      FontSize="14">
+                                      FontSize="14"
+                                      LineHeight="20"
+                                      Foreground="{StaticResource TextPrimaryBrush}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -149,10 +154,12 @@
                                                 <Setter Property="Foreground" Value="White"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Role}" Value="Assistant">
-                                                <Setter Property="Foreground" Value="#333333"/>
+                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Role}" Value="System">
-                                                <Setter Property="Foreground" Value="#666666"/>
+                                                <Setter Property="Foreground" Value="{StaticResource InfoBrush}"/>
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                <Setter Property="FontSize" Value="12"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -162,16 +169,16 @@
                             <!-- Timestamp and Status -->
                             <StackPanel Orientation="Horizontal" 
                                        HorizontalAlignment="Right"
-                                       Margin="0,5,0,0">
+                                       Margin="0,8,0,0">
                                 <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
                                           FontSize="10"
-                                          Foreground="#888888"/>
-                                <TextBlock Text=" 🔒"
-                                          FontSize="10"
-                                          Visibility="{Binding IsEncrypted, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                <TextBlock Text="{Binding Status, Converter={StaticResource StatusToSymbolConverter}}"
-                                          FontSize="10"
-                                          Margin="5,0,0,0"/>
+                                          Foreground="{StaticResource TextSecondaryBrush}"
+                                          Opacity="0.8"/>
+                                <Path Data="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C14.21,7 16,8.79 16,11C16,13.21 14.21,15 12,15C9.79,15 8,13.21 8,11C8,8.79 9.79,7 12,7Z"
+                                      Fill="{StaticResource SuccessBrush}" 
+                                      Width="12" Height="12"
+                                      Margin="6,0,0,0"
+                                      Visibility="{Binding IsEncrypted, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -180,11 +187,13 @@
         </ListBox>
 
         <!-- Input Area -->
-        <Border Grid.Row="2" 
-                Background="{DynamicResource MaterialDesignPaper}"
-                BorderBrush="{DynamicResource MaterialDesignDivider}"
-                BorderThickness="0,1,0,0"
-                Padding="10">
+        <Border Grid.Row="3" 
+                Background="{StaticResource CardBackgroundBrush}"
+                BorderBrush="#3A3A3A"
+                BorderThickness="1"
+                CornerRadius="24"
+                Padding="12"
+                Margin="8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -192,35 +201,39 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <!-- Attach Button -->
-                <Button x:Name="AttachButton"
-                       Content="📎"
-                       Width="40" Height="40"
-                       ToolTip="附加文件"
-                       Click="AttachButton_Click"
-                       Style="{StaticResource MaterialDesignFlatButton}"/>
+                <!-- Attachment Buttons -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                    <Button x:Name="AttachButton"
+                           Content="📎"
+                           Style="{StaticResource CircleButtonStyle}"
+                           ToolTip="附加文件"
+                           Click="AttachButton_Click"/>
+                    <Button Content="📷"
+                           Style="{StaticResource CircleButtonStyle}"
+                           ToolTip="拍照/选择图片"/>
+                    <Button Content="🎵"
+                           Style="{StaticResource CircleButtonStyle}"
+                           ToolTip="语音消息"/>
+                </StackPanel>
                 
                 <!-- Input TextBox -->
                 <TextBox x:Name="InputTextBox"
                         Grid.Column="1"
+                        Style="{StaticResource ModernTextBoxStyle}"
                         materialDesign:HintAssist.Hint="输入消息... (Ctrl+V 粘贴图片/文件，Ctrl+Enter 发送)"
-                        materialDesign:HintAssist.HelperText=""
                         AcceptsReturn="True"
                         TextWrapping="Wrap"
                         VerticalScrollBarVisibility="Auto"
-                        MaxHeight="150"
+                        MaxHeight="120"
                         KeyDown="InputTextBox_KeyDown"
-                        Margin="5,0"/>
+                        Margin="8,0"/>
                 
                 <!-- Send Button -->
                 <Button x:Name="SendButton"
                        Grid.Column="2"
                        Content="发送"
-                       Width="80"
-                       VerticalAlignment="Bottom"
-                       Click="SendButton_Click"
-                       Style="{StaticResource MaterialDesignRaisedButton}"
-                       materialDesign:ButtonAssist.CornerRadius="8"/>
+                       Style="{StaticResource SendButtonStyle}"
+                       Click="SendButton_Click"/>
             </Grid>
         </Border>
     </Grid>

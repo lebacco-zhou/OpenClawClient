@@ -1,0 +1,41 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 按钮悬停缩放动画 -->
+    <Storyboard x:Key="ButtonHoverAnimation">
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                         To="1.02" Duration="0:0:0.1"/>
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" 
+                         To="1.02" Duration="0:0:0.1"/>
+    </Storyboard>
+
+    <!-- 发送按钮悬停放大动画 -->
+    <Storyboard x:Key="SendButtonHoverAnimation">
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                         To="1.05" Duration="0:0:0.1"/>
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" 
+                         To="1.05" Duration="0:0:0.1"/>
+    </Storyboard>
+
+    <!-- 消息滑入动画 -->
+    <Storyboard x:Key="MessageSlideInAnimation">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                         From="0" To="1" Duration="0:0:0.3"/>
+        <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                           From="0,10,0,0" To="0,8,0,0" Duration="0:0:0.3"/>
+    </Storyboard>
+
+    <!-- 状态栏脉动动画 -->
+    <Storyboard x:Key="StatusBarPulseAnimation" RepeatBehavior="2x">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="1.0" To="0.7" Duration="0:0:0.3"
+                         AutoReverse="True"/>
+    </Storyboard>
+
+    <!-- 连接状态点旋转动画 -->
+    <Storyboard x:Key="ConnectionStatusRotateAnimation" RepeatBehavior="Forever">
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle"
+                         From="0" To="360" Duration="0:0:2"/>
+    </Storyboard>
+
+</ResourceDictionary>

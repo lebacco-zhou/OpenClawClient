@@ -6,7 +6,7 @@
         Height="500" Width="450"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="{DynamicResource MaterialDesignPaper}">
+        Background="{StaticResource BackgroundBrush}">
     
     <Grid Margin="30">
         <Grid.RowDefinitions>
@@ -17,16 +17,33 @@
 
         <!-- Logo and Title -->
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,30">
-            <materialDesign:PackIcon Kind="Robot" Width="60" Height="60" 
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+            <materialDesign:PackIcon Kind="Robot" Width="80" Height="80" 
+                                   Foreground="{StaticResource PrimaryBrush}">
+                <materialDesign:PackIcon.RenderTransform>
+                    <RotateTransform x:Name="LogoRotation" Angle="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+                <materialDesign:PackIcon.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="LogoRotation"
+                                               Storyboard.TargetProperty="Angle"
+                                               From="0" To="360" Duration="0:0:4"
+                                               RepeatBehavior="Forever"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </materialDesign:PackIcon.Triggers>
+            </materialDesign:PackIcon>
             <TextBlock Text="OpenClaw Client" 
                       FontSize="24" 
-                      FontWeight="Bold"
+                      FontWeight="SemiBold"
+                      Foreground="{StaticResource TextPrimaryBrush}"
                       HorizontalAlignment="Center"
                       Margin="0,10,0,5"/>
             <TextBlock Text="安全加密聊天客户端" 
                       FontSize="12"
-                      Foreground="{DynamicResource MaterialDesignBodyLight}"
+                      Foreground="{StaticResource TextSecondaryBrush}"
                       HorizontalAlignment="Center"/>
         </StackPanel>
 
@@ -37,46 +54,40 @@
             <TextBox x:Name="ServerUrlTextBox"
                     materialDesign:HintAssist.Hint="服务器地址"
                     materialDesign:HintAssist.HelperText="例如：https://www.lebacco.cn:8443"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                    Style="{StaticResource ModernTextBoxStyle}"
                     Margin="0,0,0,20"
-                    Text="https://www.lebacco.cn:8443"/>
+                    Text="https://www.lebacco.cn:8443"
+                    Foreground="{StaticResource TextPrimaryBrush}"/>
 
             <!-- Gateway Token -->
             <PasswordBox x:Name="TokenPasswordBox"
                         materialDesign:HintAssist.Hint="Gateway Token"
                         materialDesign:HintAssist.HelperText="输入 Gateway Token"
-                        Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                        Style="{StaticResource ModernPasswordBoxStyle}"
                         Margin="0,0,0,30"
-                        materialDesign:PasswordBoxAssist.Password="{x:Null}"/>
+                        materialDesign:PasswordBoxAssist.Password="{x:Null}"
+                        Foreground="{StaticResource TextPrimaryBrush}"/>
 
             <!-- Login and Settings Buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
                 <Button x:Name="LoginButton"
                        Content="登 录"
-                       Style="{StaticResource MaterialDesignRaisedButton}"
-                       Height="45"
-                       Width="120"
-                       FontSize="16"
-                       Click="LoginButton_Click"
-                       materialDesign:ButtonAssist.CornerRadius="8"/>
+                       Style="{StaticResource PrimaryButtonStyle}"
+                       Click="LoginButton_Click"/>
                 
                 <Button x:Name="SettingsButton"
                        Content="设 置"
-                       Style="{StaticResource MaterialDesignRaisedLightButton}"
-                       Height="45"
-                       Width="120"
-                       FontSize="16"
-                       Click="SettingsButton_Click"
-                       materialDesign:ButtonAssist.CornerRadius="8"/>
+                       Style="{StaticResource SecondaryButtonStyle}"
+                       Click="SettingsButton_Click"/>
             </StackPanel>
 
-            <!-- Error Message -->
-            <TextBlock x:Name="ErrorTextBlock"
-                      Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
+            <!-- Connection Status -->
+            <TextBlock x:Name="ConnectionStatusText"
+                      Foreground="{StaticResource SuccessBrush}"
                       FontSize="12"
                       Margin="0,15,0,0"
                       TextWrapping="Wrap"
-                      Visibility="Collapsed"/>
+                      HorizontalAlignment="Center"/>
         </StackPanel>
     </Grid>
 </Window>
