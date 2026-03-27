@@ -201,15 +201,17 @@
                 </Grid.ColumnDefinitions>
                 
                 <!-- Attachment Buttons -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <Button x:Name="AttachButton"
                            Content="📎"
                            Style="{StaticResource CircleButtonStyle}"
                            ToolTip="附加文件"
-                           Click="AttachButton_Click"/>
+                           Click="AttachButton_Click"
+                           Margin="0,0,8,0"/>
                     <Button Content="📷"
                            Style="{StaticResource CircleButtonStyle}"
-                           ToolTip="拍照/选择图片"/>
+                           ToolTip="拍照/选择图片"
+                           Margin="0,0,8,0"/>
                     <Button Content="🎵"
                            Style="{StaticResource CircleButtonStyle}"
                            ToolTip="语音消息"/>
