@@ -125,16 +125,15 @@
                             </Style>
                         </Border.Style>
                         <StackPanel>
-                            <!-- File/Image Preview -->
-                            <StackPanel Visibility="{Binding Type, Converter={StaticResource MessageTypeToVisibilityConverter}}">
-                                <Image Source="{Binding FilePath}" 
+                            <!-- File/Image Preview - Simplified without converters -->
+                            <StackPanel x:Name="FilePreviewPanel">
+                                <Image x:Name="FileImageView" 
                                        MaxHeight="200" MaxWidth="400"
                                        Stretch="Uniform"
                                        Margin="0,0,0,8"
                                        Cursor="Hand"
-                                       MouseLeftButtonUp="Image_MouseLeftButtonUp"
-                                       Visibility="{Binding Type, Converter={StaticResource ImageTypeToVisibilityConverter}}"/>
-                                <TextBlock Text="{Binding FileName}" 
+                                       MouseLeftButtonUp="Image_MouseLeftButtonUp"/>
+                                <TextBlock x:Name="FileNameText" 
                                           FontWeight="SemiBold"
                                           Foreground="{StaticResource TextPrimaryBrush}"
                                           Margin="0,0,0,5"/>
@@ -174,11 +173,11 @@
                                           FontSize="10"
                                           Foreground="{StaticResource TextSecondaryBrush}"
                                           Opacity="0.8"/>
-                                <Path Data="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C14.21,7 16,8.79 16,11C16,13.21 14.21,15 12,15C9.79,15 8,13.21 8,11C8,8.79 9.79,7 12,7Z"
-                                      Fill="{StaticResource SuccessBrush}" 
-                                      Width="12" Height="12"
-                                      Margin="6,0,0,0"
-                                      Visibility="{Binding IsEncrypted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                <!-- Encryption status shown as text instead of icon -->
+                                <TextBlock Text="{Binding IsEncrypted, Converter={StaticResource BoolToStringConverter}}"
+                                          FontSize="10"
+                                          Foreground="{StaticResource SuccessBrush}"
+                                          Margin="6,0,0,0"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>

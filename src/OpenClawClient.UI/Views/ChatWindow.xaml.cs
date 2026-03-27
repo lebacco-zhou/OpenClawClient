@@ -10,7 +10,7 @@ using OpenClawClient.Core.Services;
 namespace OpenClawClient.UI.Views;
 
 /// <summary>
-/// ChatWindow.xaml 的交互逻辑 - Phase 2 增强版
+/// ChatWindow.xaml 的交互逻辑 - Phase 2 增强版（简化 XAML 版本）
 /// </summary>
 public partial class ChatWindow : Window
 {

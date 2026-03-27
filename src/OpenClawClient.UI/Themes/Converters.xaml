@@ -2,8 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:OpenClawClient.UI.Converters">
 
-    <converters:MessageTypeToVisibilityConverter x:Key="MessageTypeToVisibilityConverter"/>
-    <converters:ImageTypeToVisibilityConverter x:Key="ImageTypeToVisibilityConverter"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
 
 </ResourceDictionary>
