@@ -173,8 +173,8 @@
                                           FontSize="10"
                                           Foreground="{StaticResource TextSecondaryBrush}"
                                           Opacity="0.8"/>
-                                <!-- Encryption status shown as text instead of icon -->
-                                <TextBlock Text="{Binding IsEncrypted, Converter={StaticResource BoolToStringConverter}}"
+                                <!-- Encryption status shown directly from model -->
+                                <TextBlock Text="{Binding EncryptionStatus}"
                                           FontSize="10"
                                           Foreground="{StaticResource SuccessBrush}"
                                           Margin="6,0,0,0"/>

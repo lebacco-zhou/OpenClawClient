@@ -14,6 +14,11 @@ public class ChatMessage
     public string? FileName { get; set; }
     public bool IsEncrypted { get; set; } = true;
     public DeliveryStatus Status { get; set; } = DeliveryStatus.Pending;
+    
+    /// <summary>
+    /// 加密状态显示文本（用于 XAML 绑定）
+    /// </summary>
+    public string EncryptionStatus => IsEncrypted ? "🔒" : "";
 }
 
 public enum MessageType

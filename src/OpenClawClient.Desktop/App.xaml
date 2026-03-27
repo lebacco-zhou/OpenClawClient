@@ -10,7 +10,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/OpenClawClient.UI;component/Themes/ModernTheme.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/OpenClawClient.UI;component/Themes/Animations.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/OpenClawClient.UI;component/Themes/Converters.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
