@@ -33,48 +33,6 @@ public class StatusToSymbolConverter : IValueConverter
 }
 
 /// <summary>
-/// 消息类型转可见性转换器
-/// </summary>
-public class MessageTypeToVisibilityConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is MessageType type)
-        {
-            return (type == MessageType.File || type == MessageType.Image) 
-                ? Visibility.Visible 
-                : Visibility.Collapsed;
-        }
-        return Visibility.Collapsed;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
-/// 图像类型转可见性转换器
-/// </summary>
-public class ImageTypeToVisibilityConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is MessageType type)
-        {
-            return type == MessageType.Image ? Visibility.Visible : Visibility.Collapsed;
-        }
-        return Visibility.Collapsed;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
 /// 消息角色转边框颜色转换器
 /// </summary>
 public class RoleToBorderBrushConverter : IValueConverter
