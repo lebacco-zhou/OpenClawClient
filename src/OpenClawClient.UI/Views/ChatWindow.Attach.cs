@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using OpenClawClient.Core.Services;
+using System.Threading.Tasks;
 
 namespace OpenClawClient.UI.Views;
 
@@ -22,7 +23,9 @@ public partial class ChatWindow : Window
         {
             foreach (var file in dialog.FileNames)
             {
-                await SendFileAsync(file);
+                // TODO: Phase 3 实现文件发送功能
+                await Task.Delay(100); // 占位实现
+                MessageBox.Show($"文件已选择：{file}\n发送功能将在 Phase 3 实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
