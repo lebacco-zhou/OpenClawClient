@@ -1,8 +1,102 @@
 <Window x:Class="OpenClawClient.UI.Views.LoginView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Login" Height="300" Width="400">
-    <Grid>
-        <TextBlock Text="Login Test" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="OpenClaw Client - 登录" 
+        Height="500" Width="450"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{StaticResource BackgroundBrush}">
+    
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Logo and Title -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,30">
+            <materialDesign:PackIcon Kind="Robot" Width="80" Height="80" 
+                                   Foreground="{StaticResource PrimaryBrush}">
+                <materialDesign:PackIcon.RenderTransform>
+                    <RotateTransform x:Name="LogoRotation" Angle="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+                <materialDesign:PackIcon.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="LogoRotation"
+                                               Storyboard.TargetProperty="Angle"
+                                               From="0" To="360" Duration="0:0:4"
+                                               RepeatBehavior="Forever"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </materialDesign:PackIcon.Triggers>
+            </materialDesign:PackIcon>
+            <TextBlock Text="OpenClaw Client" 
+                      FontSize="24" 
+                      FontWeight="SemiBold"
+                      Foreground="{StaticResource TextPrimaryBrush}"
+                      HorizontalAlignment="Center"
+                      Margin="0,10,0,5"/>
+            <TextBlock Text="安全加密聊天客户端" 
+                      FontSize="12"
+                      Foreground="{StaticResource TextSecondaryBrush}"
+                      HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Login Form -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+            
+            <!-- Server URL -->
+            <TextBox x:Name="ServerUrlTextBox"
+                    materialDesign:HintAssist.Hint="服务器地址"
+                    materialDesign:HintAssist.HelperText="例如：https://www.lebacco.cn:8443"
+                    Style="{StaticResource ModernTextBoxStyle}"
+                    Margin="0,0,0,20"
+                    Text="https://www.lebacco.cn:8443"
+                    Foreground="{StaticResource TextPrimaryBrush}"/>
+
+            <!-- Gateway Token -->
+            <PasswordBox x:Name="TokenPasswordBox"
+                        materialDesign:HintAssist.Hint="Gateway Token"
+                        materialDesign:HintAssist.HelperText="输入 Gateway Token"
+                        Style="{StaticResource ModernPasswordBoxStyle}"
+                        Margin="0,0,0,30"
+                        materialDesign:PasswordBoxAssist.Password="{x:Null}"
+                        Foreground="{StaticResource TextPrimaryBrush}"/>
+
+            <!-- Login and Settings Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+                <Button x:Name="LoginButton"
+                       Content="登 录"
+                       Style="{StaticResource PrimaryButtonStyle}"
+                       Click="LoginButton_Click"/>
+                
+                <Button x:Name="SettingsButton"
+                       Content="设 置"
+                       Style="{StaticResource SecondaryButtonStyle}"
+                       Click="SettingsButton_Click"/>
+            </StackPanel>
+
+            <!-- Connection Status -->
+            <TextBlock x:Name="ConnectionStatusText"
+                      Foreground="{StaticResource SuccessBrush}"
+                      FontSize="12"
+                      Margin="0,15,0,0"
+                      TextWrapping="Wrap"
+                      HorizontalAlignment="Center"/>
+            
+            <!-- Error Message -->
+            <TextBlock x:Name="ErrorTextBlock"
+                      Foreground="{StaticResource ErrorBrush}"
+                      FontSize="12"
+                      Margin="0,10,0,0"
+                      TextWrapping="Wrap"
+                      HorizontalAlignment="Center"
+                      Visibility="Collapsed"/>
+        </StackPanel>
     </Grid>
 </Window>
