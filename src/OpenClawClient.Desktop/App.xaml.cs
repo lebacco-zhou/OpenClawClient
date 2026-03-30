@@ -1,5 +1,4 @@
 using System.Windows;
-using OpenClawClient.UI.Converters;
 
 namespace OpenClawClient.Desktop;
 
@@ -12,14 +11,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
         
-        // 注册转换器资源
-        Resources.Add("RoleToBackgroundConverter", new RoleToBackgroundConverter());
-        Resources.Add("BoolToVisibilityConverter", new BoolToVisibilityConverter());
-        Resources.Add("ConnectionStateToTextConverter", new ConnectionStateToTextConverter());
-        Resources.Add("MessageTypeToIconConverter", new MessageTypeToIconConverter());
-        Resources.Add("StatusToSymbolConverter", new StatusToSymbolConverter());
-        Resources.Add("MessageTypeToVisibilityConverter", new MessageTypeToVisibilityConverter());
-        Resources.Add("ImageTypeToVisibilityConverter", new ImageTypeToVisibilityConverter());
-        Resources.Add("RoleToBorderBrushConverter", new RoleToBorderBrushConverter());
+        // 不再注册转换器资源，因为聊天界面现在使用代码动态创建 UI
+        // 所有转换器依赖已在 ChatWindow.xaml.cs 中移除
     }
 }
