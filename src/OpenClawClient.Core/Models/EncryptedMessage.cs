@@ -24,4 +24,11 @@ public class EncryptedMessage
     
     [JsonPropertyName("tag")]
     public string? Tag { get; set; }
+    
+    // 认证专用属性
+    [JsonPropertyName("clientId")]
+    public string? ClientId { get; set; }
+    
+    [JsonPropertyName("token")]
+    public string? Token { get; set; }
 }

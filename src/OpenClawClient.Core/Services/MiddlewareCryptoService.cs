@@ -13,6 +13,10 @@ public interface IMiddlewareCryptoService
     Task<(byte[] encryptedData, byte[] tag)> EncryptAsync(byte[] plaintext, byte[] key, byte[] nonce);
     Task<byte[]> DecryptAsync(byte[] encryptedData, byte[] key, byte[] nonce, byte[] tag);
     Task<byte[]> ImportSessionKeyAsync(string encryptedSessionKeyBase64);
+    
+    // Nonce 管理方法
+    bool IsNonceUsed(byte[] nonce);
+    void MarkNonceAsUsed(byte[] nonce);
 }
 
 public class MiddlewareCryptoService : IMiddlewareCryptoService
@@ -44,21 +48,21 @@ public class MiddlewareCryptoService : IMiddlewareCryptoService
 
     public async Task<(byte[] encryptedData, byte[] tag)> EncryptAsync(byte[] plaintext, byte[] key, byte[] nonce)
     {
-        using var aes = AesGcm.Open(key, nonce);
+        using var aes = new AesGcm(key);
         var tag = new byte[16]; // GCM 标签长度
         var encryptedData = new byte[plaintext.Length];
         
-        await Task.Run(() => aes.Encrypt(plaintext, encryptedData, tag));
+        await Task.Run(() => aes.Encrypt(nonce, plaintext, encryptedData, tag));
         
         return (encryptedData, tag);
     }
 
     public async Task<byte[]> DecryptAsync(byte[] encryptedData, byte[] key, byte[] nonce, byte[] tag)
     {
-        using var aes = AesGcm.Open(key, nonce);
+        using var aes = new AesGcm(key);
         var plaintext = new byte[encryptedData.Length];
         
-        await Task.Run(() => aes.Decrypt(encryptedData, tag, plaintext));
+        await Task.Run(() => aes.Decrypt(nonce, encryptedData, tag, plaintext));
         
         return plaintext;
     }
