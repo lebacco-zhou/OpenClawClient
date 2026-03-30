@@ -271,7 +271,7 @@ public partial class ChatWindow : Window
         // 加密图标（如果已加密）
         if (message.IsEncrypted)
         {
-            var lockIcon = new Path
+            var lockIcon = new System.Windows.Shapes.Path
             {
                 Data = Geometry.Parse("M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C14.21,7 16,8.79 16,11C16,13.21 14.21,15 12,15C9.79,15 8,13.21 8,11C8,8.79 9.79,7 12,7Z"),
                 Fill = GetResourceBrush("SuccessBrush"),
@@ -288,9 +288,9 @@ public partial class ChatWindow : Window
         var messageBorder = new Border
         {
             Child = mainPanel,
-            Margin = new Thickness(0, 8),
+            Margin = new Thickness(0, 8, 0, 8),
             MaxWidth = 600,
-            Padding = new Thickness(12, 10),
+            Padding = new Thickness(12, 10, 12, 10),
             CornerRadius = new CornerRadius(8)
         };
         
@@ -483,7 +483,7 @@ public partial class ChatWindow : Window
             return;
         }
 
-        var fileName = Path.GetFileName(filePath);
+        var fileName = System.IO.Path.GetFileName(filePath);
         var message = new ChatMessage
         {
             Content = $"📎 发送文件：{fileName}",
@@ -522,7 +522,7 @@ public partial class ChatWindow : Window
         }
 
         // 将图片保存为临时文件
-        var tempFile = Path.Combine(Path.GetTempPath(), $"openclaw_{Guid.NewGuid():N}.png");
+        var tempFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"openclaw_{Guid.NewGuid():N}.png");
         
         try
         {
@@ -532,7 +532,7 @@ public partial class ChatWindow : Window
                 encoder.Frames.Add(BitmapFrame.Create(bitmap));
             }
 
-            using (var stream = new FileStream(tempFile, FileMode.Create))
+            using (var stream = new FileStream(tempFile, FileMode.Create, FileAccess.Write))
             {
                 encoder.Save(stream);
             }
@@ -572,7 +572,7 @@ public partial class ChatWindow : Window
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)
     {
-        var searchDialog = new OpenClawClient.UI.Views.SearchDialog(MessagesListBox);
-        searchDialog.ShowDialog();
+        // TODO: 实现搜索功能 - 需要重构消息存储为 ObservableCollection
+        MessageBox.Show("搜索功能将在后续版本中实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
