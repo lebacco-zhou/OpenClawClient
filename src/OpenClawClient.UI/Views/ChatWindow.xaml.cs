@@ -20,8 +20,6 @@ public partial class ChatWindow : Window
     private readonly ICryptoService _cryptoService = new CryptoService();
     private bool _isConnected = false;
     private string _selectedModel; // 存储选中的模型
-    
-    // 模型选择下拉框 (XAML 中定义，自动生成的成员)
 
     public ChatWindow(LoginConfig config, INetworkService networkService)
     {
@@ -555,7 +553,7 @@ public partial class ChatWindow : Window
         }
     }
 
-    private async void AttachButton_Click(object sender, RoutedEventArgs e)
+    private void AttachButton_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
@@ -567,14 +565,14 @@ public partial class ChatWindow : Window
         {
             foreach (var file in dialog.FileNames)
             {
-                await SendFileAsync(file);
+                _ = SendFileAsync(file);
             }
         }
     }
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)
     {
-        var searchDialog = new SearchDialog(MessagesListBox);
+        var searchDialog = new OpenClawClient.UI.Views.SearchDialog(MessagesListBox);
         searchDialog.ShowDialog();
     }
 }
