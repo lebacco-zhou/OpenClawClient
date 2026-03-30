@@ -182,15 +182,15 @@ public class MiddlewareNetworkService : INetworkService
                 return false;
             }
             
-            // 获取会话密钥
-            if (root.TryGetProperty("encryptedSessionKey", out var sessionKeyElement))
+            // 获取会话密钥（现在是未加密的 Base64 编码）
+            if (root.TryGetProperty("sessionKey", out var sessionKeyElement))
             {
-                var encryptedSessionKey = sessionKeyElement.GetString();
-                if (!string.IsNullOrEmpty(encryptedSessionKey))
+                var sessionKeyBase64 = sessionKeyElement.GetString();
+                if (!string.IsNullOrEmpty(sessionKeyBase64))
                 {
-                    ClientLogger.LogDebug("Attempting to import session key");
-                    _sessionKey = await _cryptoService.ImportSessionKeyAsync(encryptedSessionKey);
-                    ClientLogger.LogInfo("Session key imported successfully");
+                    ClientLogger.LogDebug("Decoding session key from Base64");
+                    _sessionKey = Convert.FromBase64String(sessionKeyBase64);
+                    ClientLogger.LogInfo("Session key decoded successfully");
                 }
                 else
                 {
@@ -199,7 +199,7 @@ public class MiddlewareNetworkService : INetworkService
             }
             else
             {
-                ClientLogger.LogWarning("No encryptedSessionKey field in auth response");
+                ClientLogger.LogWarning("No sessionKey field in auth response");
             }
             
             ClientLogger.LogInfo("Authentication completed successfully");
