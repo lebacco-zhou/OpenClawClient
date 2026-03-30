@@ -74,30 +74,12 @@ public class MiddlewareCryptoService : IMiddlewareCryptoService
 
     private RSA LoadMiddlewarePublicKey()
     {
-        // 从嵌入的公钥文件加载中间件的 RSA 公钥
-        string publicKeyContent;
-        var publicKeyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MiddlewarePublicKey.pem");
+        // 使用 Base64 编码的 DER 格式公钥（避免 PEM 解析问题）
+        var base64PublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAufLBAOm+MeRTJnXQRbwGNsUQA9S2cQtXBtzqGdeTLXQUTkGH4gGvzVf+534S/lkdCRdc9JqDSzLemKi1x3sx+Zvf64KtSt+6LcCIGrJdM9FuTfsQ10S8ifXIvsLkZnnmbxdpV6vgDTcYod3OzEMGEhCzPWmQGvHtYmkVbkq8uv6UNyGJ7HCrgHfEGTpeghrzcQEZ8JCcJoyJxpvE8SeIHJkiCz1BfMq4d6iuIx9KNuZzsIKtcyzc3u06UGdx93/8Zx5MY4F5a4yhZr0yIIz2ymLdME1U22JnOgiIBpVGcyb6eUUwkEQxgI1/mG2/QiI4Pep58Y26Qn5UoFHLjkU4/wIDAQAB";
         
-        if (File.Exists(publicKeyPath))
-        {
-            publicKeyContent = File.ReadAllText(publicKeyPath);
-        }
-        else
-        {
-            // 备用：如果公钥文件不存在，使用硬编码的公钥
-            publicKeyContent = @"-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAufLBAOm+MeRTJnXQRbwG
-NsUQA9S2cQtXBtzqGdeTLXQUTkGH4gGvzVf+534S/lkdCRdc9JqDSzLemKi1x3sx
-+Zvf64KtSt+6LcCIGrJdM9FuTfsQ10S8ifXIvsLkZnnmbxdpV6vgDTcYod3OzEMG
-EhCzPWmQGvHtYmkVbkq8uv6UNyGJ7HCrgHfEGTpeghrzcQEZ8JCcJoyJxpvE8SeI
-HJkiCz1BfMq4d6iuIx9KNuZzsIKtcyzc3u06UGdx93/8Zx5MY4F5a4yhZr0yIIz2
-ymLdME1U22JnOgiIBpVGcyb6eUUwkEQxgI1/mG2/QiI4Pep58Y26Qn5UoFHLjkU4
-/wIDAQAB
------END PUBLIC KEY-----";
-        }
-        
+        var publicKeyBytes = Convert.FromBase64String(base64PublicKey);
         var rsa = RSA.Create();
-        rsa.ImportFromPem(publicKeyContent);
+        rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
         return rsa;
     }
 
