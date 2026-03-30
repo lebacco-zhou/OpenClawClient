@@ -37,8 +37,8 @@ public partial class LoginView : Window
         }
         else
         {
-            // 默认服务器地址
-            ServerUrlTextBox.Text = "https://www.lebacco.cn:8443";
+            // 默认服务器地址 - 中间件 WebSocket
+            ServerUrlTextBox.Text = "wss://www.lebacco.cn:8445";
         }
     }
 
@@ -78,8 +78,18 @@ public partial class LoginView : Window
 
         try
         {
-            var networkService = new NetworkService();
-            var success = await networkService.ConnectAsync(config.ServerUrl, config.GatewayToken);
+            // 使用网络服务工厂
+            var networkService = NetworkServiceFactory.CreateNetworkService();
+            
+            // 验证并修正服务器 URL
+            var serverUrl = config.ServerUrl;
+            if (serverUrl.StartsWith("https://") || serverUrl.StartsWith("http://"))
+            {
+                // 如果用户输入了 HTTPS/HTTP，自动转换为 WSS/WS
+                serverUrl = serverUrl.Replace("https://", "wss://").Replace("http://", "ws://");
+            }
+            
+            var success = await networkService.ConnectAsync(serverUrl, config.GatewayToken);
 
             if (success)
             {
