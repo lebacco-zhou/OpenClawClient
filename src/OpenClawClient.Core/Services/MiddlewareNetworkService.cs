@@ -53,13 +53,17 @@ public class MiddlewareNetworkService : INetworkService
 
     public async Task<bool> ConnectAsync(string serverUrl, string clientToken)
     {
+        ClientLogger.LogInfo($"ConnectAsync called with serverUrl: {serverUrl}, clientToken length: {clientToken?.Length ?? 0}");
+        
         _serverUrl = serverUrl;
         _clientToken = clientToken;
         
         // 验证服务器 URL 格式
         if (!_serverUrl.StartsWith("wss://") && !_serverUrl.StartsWith("ws://"))
         {
-            throw new ArgumentException("Server URL must start with wss:// or ws://");
+            var errorMessage = "Server URL must start with wss:// or ws://";
+            ClientLogger.LogError(errorMessage);
+            throw new ArgumentException(errorMessage);
         }
 
         return await ConnectInternalAsync();
@@ -67,6 +71,7 @@ public class MiddlewareNetworkService : INetworkService
 
     private async Task<bool> ConnectInternalAsync()
     {
+        ClientLogger.LogInfo("ConnectInternalAsync started");
         UpdateConnectionState(ConnectionState.Connecting);
 
         try
@@ -75,23 +80,32 @@ public class MiddlewareNetworkService : INetworkService
             _webSocket = new ClientWebSocket();
             _cts = new CancellationTokenSource();
             
+            // 配置 WebSocket 客户端以接受 SSL 证书（仅用于开发环境）
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            
             // 连接到中间件 WebSocket
             var wsUrl = $"{_serverUrl}/ws";
+            ClientLogger.LogInfo($"Connecting to WebSocket URL: {wsUrl}");
+            
             await _webSocket.ConnectAsync(new Uri(wsUrl), _cts.Token);
             
+            ClientLogger.LogInfo("WebSocket connection established successfully");
             _isConnected = true;
             _reconnectAttempts = 0;
             _isReconnecting = false;
             
             // 执行认证流程
+            ClientLogger.LogInfo("Starting authentication process");
             var authSuccess = await AuthenticateAsync();
             if (!authSuccess)
             {
+                ClientLogger.LogError("Authentication failed");
                 _isConnected = false;
                 UpdateConnectionState(ConnectionState.Failed);
                 return false;
             }
             
+            ClientLogger.LogInfo("Authentication successful, connection established");
             UpdateConnectionState(ConnectionState.Connected);
             
             // 启动接收循环和心跳
@@ -102,7 +116,7 @@ public class MiddlewareNetworkService : INetworkService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MiddlewareNetworkService] Connection failed: {ex.Message}");
+            ClientLogger.LogError($"Connection failed: {ex.Message}", ex);
             _isConnected = false;
             UpdateConnectionState(ConnectionState.Failed);
             return false;
@@ -113,9 +127,12 @@ public class MiddlewareNetworkService : INetworkService
     {
         try
         {
+            ClientLogger.LogInfo("AuthenticateAsync started");
+            
             // 生成 Nonce
             var nonce = _cryptoService.GenerateNonce();
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            ClientLogger.LogDebug($"Generated nonce: {Convert.ToBase64String(nonce)}, timestamp: {timestamp}");
             
             // 构建认证消息
             var authMessage = new EncryptedMessage
@@ -129,12 +146,16 @@ public class MiddlewareNetworkService : INetworkService
             
             // 发送认证消息
             var authJson = JsonSerializer.Serialize(authMessage);
+            ClientLogger.LogDebug($"Sending auth message: {authJson}");
+            
             var authBytes = Encoding.UTF8.GetBytes(authJson);
             await _webSocket!.SendAsync(
                 new ArraySegment<byte>(authBytes),
                 WebSocketMessageType.Text,
                 true,
                 CancellationToken.None);
+            
+            ClientLogger.LogInfo("Auth message sent, waiting for response");
             
             // 等待认证结果
             var buffer = new byte[4096];
@@ -144,11 +165,12 @@ public class MiddlewareNetworkService : INetworkService
                 
             if (result.MessageType != WebSocketMessageType.Text)
             {
+                ClientLogger.LogWarning($"Received non-text message type: {result.MessageType}");
                 return false;
             }
             
             var responseJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
-            Console.WriteLine($"[MiddlewareNetworkService] Auth response: {responseJson}");
+            ClientLogger.LogInfo($"Auth response received: {responseJson}");
             
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
@@ -156,7 +178,7 @@ public class MiddlewareNetworkService : INetworkService
             if (!root.TryGetProperty("success", out var successElement) || !successElement.GetBoolean())
             {
                 var error = root.TryGetProperty("error", out var errorElement) ? errorElement.GetString() : "Authentication failed";
-                Console.WriteLine($"[MiddlewareNetworkService] Auth failed: {error}");
+                ClientLogger.LogError($"Authentication failed: {error}");
                 return false;
             }
             
@@ -166,16 +188,26 @@ public class MiddlewareNetworkService : INetworkService
                 var encryptedSessionKey = sessionKeyElement.GetString();
                 if (!string.IsNullOrEmpty(encryptedSessionKey))
                 {
+                    ClientLogger.LogDebug("Attempting to import session key");
                     _sessionKey = await _cryptoService.ImportSessionKeyAsync(encryptedSessionKey);
-                    Console.WriteLine("[MiddlewareNetworkService] Session key imported successfully");
+                    ClientLogger.LogInfo("Session key imported successfully");
+                }
+                else
+                {
+                    ClientLogger.LogWarning("No session key in auth response");
                 }
             }
+            else
+            {
+                ClientLogger.LogWarning("No encryptedSessionKey field in auth response");
+            }
             
+            ClientLogger.LogInfo("Authentication completed successfully");
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MiddlewareNetworkService] Authentication error: {ex.Message}");
+            ClientLogger.LogError($"Authentication error: {ex.Message}", ex);
             return false;
         }
     }
@@ -282,18 +314,23 @@ public class MiddlewareNetworkService : INetworkService
 
     private async Task ReceiveLoopAsync()
     {
+        ClientLogger.LogInfo("ReceiveLoopAsync started");
         var buffer = new byte[8192]; // 增加缓冲区大小
         
         try
         {
             while (_isConnected && _webSocket?.State == WebSocketState.Open)
             {
+                ClientLogger.LogDebug("Waiting for WebSocket message");
                 var result = await _webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer), 
                     CancellationToken.None);
 
+                ClientLogger.LogDebug($"Received message type: {result.MessageType}, count: {result.Count}");
+
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
+                    ClientLogger.LogWarning("WebSocket closed by server");
                     _isConnected = false;
                     _ = ReconnectAsync();
                     break;
@@ -302,7 +339,7 @@ public class MiddlewareNetworkService : INetworkService
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Console.WriteLine($"[MiddlewareNetworkService] Received: {json}");
+                    ClientLogger.LogInfo($"Received message: {json}");
                     
                     try
                     {
@@ -311,26 +348,33 @@ public class MiddlewareNetworkService : INetworkService
                         
                         if (encryptedMessage != null)
                         {
+                            ClientLogger.LogDebug("Processing encrypted message");
                             await ProcessEncryptedMessageAsync(encryptedMessage);
                         }
                         else
                         {
+                            ClientLogger.LogDebug("Attempting to parse as ChatMessage");
                             // 可能是直接的 ChatMessage（如错误消息）
                             var chatMessage = JsonSerializer.Deserialize<ChatMessage>(json);
                             if (chatMessage != null)
                             {
+                                ClientLogger.LogInfo("Received ChatMessage");
                                 MessageReceived?.Invoke(this, chatMessage);
+                            }
+                            else
+                            {
+                                ClientLogger.LogWarning($"Could not parse message as either EncryptedMessage or ChatMessage: {json}");
                             }
                         }
                     }
                     catch (JsonException ex)
                     {
-                        Console.WriteLine($"[MiddlewareNetworkService] Failed to parse message: {ex.Message}");
+                        ClientLogger.LogError($"Failed to parse message: {ex.Message}", ex);
                         
                         // 检查是否为心跳响应或其他系统消息
                         if (json.Contains("\"type\":\"heartbeat_ack\"", StringComparison.OrdinalIgnoreCase))
                         {
-                            Console.WriteLine("[MiddlewareNetworkService] Heartbeat acknowledged");
+                            ClientLogger.LogInfo("Heartbeat acknowledged");
                             continue;
                         }
                         
@@ -343,6 +387,7 @@ public class MiddlewareNetworkService : INetworkService
                             Timestamp = DateTime.Now,
                             IsEncrypted = false
                         };
+                        ClientLogger.LogInfo("Treating as system message");
                         MessageReceived?.Invoke(this, systemMessage);
                     }
                 }
@@ -350,21 +395,23 @@ public class MiddlewareNetworkService : INetworkService
         }
         catch (WebSocketException ex)
         {
-            Console.WriteLine($"[MiddlewareNetworkService] WebSocket error: {ex.Message}");
+            ClientLogger.LogError($"WebSocket error: {ex.Message}", ex);
             _isConnected = false;
             _ = ReconnectAsync();
         }
         catch (OperationCanceledException)
         {
             // Normal cancellation
-            Console.WriteLine("[MiddlewareNetworkService] Receive loop cancelled");
+            ClientLogger.LogInfo("Receive loop cancelled");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MiddlewareNetworkService] Unexpected error: {ex.Message}");
+            ClientLogger.LogError($"Unexpected error in receive loop: {ex.Message}", ex);
             _isConnected = false;
             _ = ReconnectAsync();
         }
+        
+        ClientLogger.LogInfo("ReceiveLoopAsync ended");
     }
 
     private async Task ProcessEncryptedMessageAsync(EncryptedMessage encryptedMessage)

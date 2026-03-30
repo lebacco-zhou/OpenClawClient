@@ -78,6 +78,9 @@ public partial class LoginView : Window
 
         try
         {
+            // 记录登录尝试
+            ClientLogger.LogInfo($"Login attempt - Server: {config.ServerUrl}, Token length: {config.GatewayToken?.Length ?? 0}");
+            
             // 使用网络服务工厂
             var networkService = NetworkServiceFactory.CreateNetworkService();
             
@@ -89,17 +92,20 @@ public partial class LoginView : Window
                 serverUrl = serverUrl.Replace("https://", "wss://").Replace("http://", "ws://");
             }
             
+            ClientLogger.LogInfo($"Connecting to: {serverUrl}");
             var success = await networkService.ConnectAsync(serverUrl, config.GatewayToken);
 
             if (success)
             {
                 // 打开主聊天窗口
+                ClientLogger.LogInfo("Login successful, opening chat window");
                 var chatWindow = new ChatWindow(config, networkService);
                 chatWindow.Show();
                 this.Close();
             }
             else
             {
+                ClientLogger.LogError("Login failed");
                 ShowError("连接失败，请检查服务器地址和 Token 是否正确");
             }
         }
