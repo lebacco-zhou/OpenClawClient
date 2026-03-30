@@ -102,7 +102,7 @@
         <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="rgba(102, 51, 153, 0.1)"/>
+                <Setter Property="Background" Value="#1A663399"/>
             </Trigger>
         </Style.Triggers>
     </Style>
