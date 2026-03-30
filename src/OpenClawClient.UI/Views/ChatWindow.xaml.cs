@@ -7,7 +7,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using OpenClawClient.Core.Models;
 using OpenClawClient.Core.Services;
-using OpenClawClient.UI.Views;
 
 namespace OpenClawClient.UI.Views;
 
@@ -177,23 +176,39 @@ public partial class ChatWindow : Window
             // 图片预览
             if (message.Type == MessageType.Image && !string.IsNullOrEmpty(message.FilePath))
             {
-                var image = new Image
+                try
                 {
-                    Source = new BitmapImage(new Uri(message.FilePath)),
-                    MaxHeight = 200,
-                    MaxWidth = 400,
-                    Stretch = Stretch.Uniform,
-                    Margin = new Thickness(0, 0, 0, 8),
-                    Cursor = Cursors.Hand
-                };
-                image.MouseLeftButtonUp += async (s, e) =>
-                {
-                    if (image.Source is BitmapSource bitmap)
+                    var image = new Image
                     {
-                        await ShowImageViewerAsync(bitmap);
-                    }
-                };
-                filePanel.Children.Add(image);
+                        Source = new BitmapImage(new Uri(message.FilePath)),
+                        MaxHeight = 200,
+                        MaxWidth = 400,
+                        Stretch = Stretch.Uniform,
+                        Margin = new Thickness(0, 0, 0, 8),
+                        Cursor = Cursors.Hand
+                    };
+                    image.MouseLeftButtonUp += async (s, e) =>
+                    {
+                        if (image.Source is BitmapSource bitmap)
+                        {
+                            await ShowImageViewerAsync(bitmap);
+                        }
+                    };
+                    filePanel.Children.Add(image);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ChatWindow] Failed to load image: {ex.Message}");
+                    // 如果图片加载失败，显示文件名作为文本
+                    var fileNameText = new TextBlock
+                    {
+                        Text = $"🖼️ {message.FileName ?? "图片"}",
+                        FontWeight = FontWeights.SemiBold,
+                        Foreground = GetResourceBrush("TextPrimaryBrush"),
+                        Margin = new Thickness(0, 0, 0, 5)
+                    };
+                    filePanel.Children.Add(fileNameText);
+                }
             }
             
             // 文件名
@@ -323,7 +338,7 @@ public partial class ChatWindow : Window
     {
         try
         {
-            var viewer = new ImageViewerWindow(bitmap);
+            var viewer = new OpenClawClient.UI.Views.ImageViewerWindow(bitmap);
             viewer.ShowDialog();
         }
         catch (Exception ex)
