@@ -48,7 +48,7 @@ public class MiddlewareCryptoService : IMiddlewareCryptoService
 
     public async Task<(byte[] encryptedData, byte[] tag)> EncryptAsync(byte[] plaintext, byte[] key, byte[] nonce)
     {
-        using var aes = new AesGcm(key);
+        using var aes = new AesGcm(key, 16); // 指定标签大小为16字节
         var tag = new byte[16]; // GCM 标签长度
         var encryptedData = new byte[plaintext.Length];
         
@@ -59,7 +59,7 @@ public class MiddlewareCryptoService : IMiddlewareCryptoService
 
     public async Task<byte[]> DecryptAsync(byte[] encryptedData, byte[] key, byte[] nonce, byte[] tag)
     {
-        using var aes = new AesGcm(key);
+        using var aes = new AesGcm(key, 16); // 指定标签大小为16字节
         var plaintext = new byte[encryptedData.Length];
         
         await Task.Run(() => aes.Decrypt(nonce, encryptedData, tag, plaintext));
@@ -80,9 +80,9 @@ public class MiddlewareCryptoService : IMiddlewareCryptoService
         if (File.Exists(publicKeyPath))
         {
             var publicKey = File.ReadAllText(publicKeyPath);
-            var rsa = RSA.Create();
-            rsa.ImportFromPem(publicKey);
-            return rsa;
+            var publicKeyRsa = RSA.Create();
+            publicKeyRsa.ImportFromPem(publicKey);
+            return publicKeyRsa;
         }
         
         // 备用：如果公钥文件不存在，使用硬编码的公钥
@@ -96,9 +96,9 @@ ymLdME1U22JnOgiIBpVGcyb6eUUwkEQxgI1/mG2/QiI4Pep58Y26Qn5UoFHLjkU4
 /wIDAQAB
 -----END PUBLIC KEY-----";
         
-        var rsa = RSA.Create();
-        rsa.ImportFromPem(hardcodedPublicKey);
-        return rsa;
+        var hardcodedRsa = RSA.Create();
+        hardcodedRsa.ImportFromPem(hardcodedPublicKey);
+        return hardcodedRsa;
     }
 
     public bool IsNonceUsed(byte[] nonce)
