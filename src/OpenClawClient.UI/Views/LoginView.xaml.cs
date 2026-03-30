@@ -39,6 +39,8 @@ public partial class LoginView : Window
         {
             // 默认服务器地址 - 中间件 WebSocket
             ServerUrlTextBox.Text = "wss://www.lebacco.cn:8445";
+            // 默认 Client Token
+            TokenPasswordBox.Password = "mt_a1b2c3d4e5f67890abcdef1234567890";
         }
     }
 
@@ -54,7 +56,7 @@ public partial class LoginView : Window
         var token = TokenPasswordBox.Password;
         if (string.IsNullOrWhiteSpace(token))
         {
-            ShowError("请输入 Gateway Token");
+            ShowError("请输入 Client Token");
             return;
         }
 

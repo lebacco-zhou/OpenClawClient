@@ -59,10 +59,10 @@
                     Text="https://www.lebacco.cn:8443"
                     Foreground="{StaticResource TextPrimaryBrush}"/>
 
-            <!-- Gateway Token -->
+            <!-- Client Token -->
             <PasswordBox x:Name="TokenPasswordBox"
-                        materialDesign:HintAssist.Hint="Gateway Token"
-                        materialDesign:HintAssist.HelperText="输入 Gateway Token"
+                        materialDesign:HintAssist.Hint="Client Token"
+                        materialDesign:HintAssist.HelperText="输入 Client Token (以 mt_ 开头)"
                         Style="{StaticResource ModernPasswordBoxStyle}"
                         Margin="0,0,0,30"
                         materialDesign:PasswordBoxAssist.Password="{x:Null}"
