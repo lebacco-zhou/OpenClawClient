@@ -45,6 +45,10 @@ public class MiddlewareNetworkService : INetworkService
     public MiddlewareNetworkService(IMiddlewareCryptoService cryptoService)
     {
         _cryptoService = cryptoService;
+        
+        // 配置 WebSocket 客户端以接受 SSL 证书（仅用于开发环境）
+        // 在生产环境中应该使用有效的证书
+        System.Net.ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
     }
 
     public async Task<bool> ConnectAsync(string serverUrl, string clientToken)
