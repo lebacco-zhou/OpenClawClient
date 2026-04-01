@@ -1,0 +1,41 @@
+name: Release Build
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Publish Desktop Client
+      run: dotnet publish src/OpenClawClient.Desktop/OpenClawClient.Desktop.csproj -c Release -r win-x64 --self-contained true
+    
+    - name: Create Release Package
+      run: |
+        mkdir OpenClawClient-Release
+        xcopy "src\OpenClawClient.Desktop\bin\Release\net8.0-windows\win-x64\publish\*" "OpenClawClient-Release\" /E /I
+        echo "OpenClawClient Release Build" > OpenClawClient-Release\README.txt
+        echo "=========================" >> OpenClawClient-Release\README.txt
+        echo "1. Run OpenClawClient.exe" >> OpenClawClient-Release\README.txt
+        echo "2. Use Gateway URL: ws://www.lebacco.cn:18789" >> OpenClawClient-Release\README.txt
+        echo "3. Use Gateway Token: 31ae141d63b2676d4d7929b5fb5c6b8aae04e08bb0cb3e7a" >> OpenClawClient-Release\README.txt
+    
+    - name: Upload Release Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: OpenClawClient-Release-Win-x64
+        path: OpenClawClient-Release/
+        retention-days: 30
