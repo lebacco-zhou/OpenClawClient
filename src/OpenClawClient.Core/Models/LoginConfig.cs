@@ -5,7 +5,7 @@ namespace OpenClawClient.Core.Models;
 /// </summary>
 public class LoginConfig
 {
-    public string ServerUrl { get; set; } = "https://www.lebacco.cn:8443";
+    public string ServerUrl { get; set; } = "ws://www.lebacco.cn:18789";
     public string GatewayToken { get; set; } = string.Empty;
     public string? AesKey { get; set; }
     public string SelectedModel { get; set; } = "qwen3.5-plus"; // 默认模型

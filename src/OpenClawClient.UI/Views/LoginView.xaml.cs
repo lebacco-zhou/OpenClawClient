@@ -37,10 +37,10 @@ public partial class LoginView : Window
         }
         else
         {
-            // 默认服务器地址 - 中间件 WebSocket
-            ServerUrlTextBox.Text = "wss://www.lebacco.cn:8445";
-            // 默认 Client Token
-            TokenPasswordBox.Password = "mt_a1b2c3d4e5f67890abcdef1234567890";
+            // 默认服务器地址 - OpenClaw Gateway WebSocket
+            ServerUrlTextBox.Text = "ws://www.lebacco.cn:18789";
+            // 默认 Gateway Token
+            TokenPasswordBox.Password = "31ae141d63b2676d4d7929b5fb5c6b8aae04e08bb0cb3e7a";
         }
     }
 
